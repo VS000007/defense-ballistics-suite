@@ -1,32 +1,85 @@
-# React + TypeScript + Vite
+# 🛡️ AEGIS Defense Ballistics Suite
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A comprehensive ballistic missile defense analysis platform built with React + Vite.
 
-Currently, two official plugins are available:
+## 🚀 Live Demo
+> Deployed via Vercel — link coming soon
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 📦 Projects Included
 
-## React Compiler
+### 1. Defense Landing Page
+A premium React/TypeScript landing page featuring:
+- **Multi-tier defense system** visualization (Tier I, II, III interception layers)
+- **Blueprint vehicle schematic** animations with real missile diagrams
+- **Interactive arsenal database** — 29+ regional ballistic missiles (China, Pakistan, Afghanistan)
+- **Sand/particle dissolve** image transitions
+- **Glassmorphism UI** with tactical dark theme
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 2. Ballistic Simulator (`arsenal.js`)
+- Full missile database with range, payload, class, and status data
+- Filterable/searchable missile cards UI
+- Radar coverage visualization
 
-## Expanding the Oxlint configuration
+### 3. Reference Documents
+Research PDFs covering:
+- Introduction to Ballistic Missiles
+- Ballistic component classification
+- Mathematical aspects & trajectory calculation
+- Ballistic working principles
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## 🛠️ Tech Stack
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React 19 + TypeScript |
+| Build Tool | Vite 8 |
+| Animations | Framer Motion |
+| Icons | Lucide React |
+| Styling | Tailwind CSS v4 |
+| Deployment | Vercel |
+
+## ⚡ Run Locally
+
+```bash
+# Clone the repo
+git clone https://github.com/VS000007/defense-ballistics-suite.git
+cd defense-ballistics-suite
+
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Open http://localhost:5173
+
+## 📁 Project Structure
+
+```
+defense-ballistics-suite/
+├── src/
+│   ├── App.tsx          # Main React application
+│   ├── App.css          # Component styles
+│   └── index.css        # Global styles
+├── public/
+│   ├── interceptor_hero.jpg
+│   ├── launcher_blueprint.png
+│   └── chapter_*.jpg    # Chapter cover images
+├── arsenal.js           # Standalone missile database module
+├── extracted_assets/    # Extracted PDF imagery
+└── *.pdf                # Reference research documents
+```
+
+## 🔬 Features
+
+- ✅ Animated hero section with tactical HUD overlay
+- ✅ Multi-chapter defense systems breakdown
+- ✅ Interactive missile arsenal browser (filterable by country/class)
+- ✅ Blueprint schematic with zoom/pan views
+- ✅ MILP solver visualization for site optimization
+- ✅ GIS polygon siting analysis section
+- ✅ Fully responsive dark tactical UI
+
+---
+*Built by VS000007 · AEGIS Defense Intelligence Platform*
