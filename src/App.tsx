@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import SimulatorPage from "./SimulatorPage";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -438,7 +439,7 @@ function BlueprintVehicleAnimation({
   );
 }
 
-export default function App() {
+function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
   const [activeChapter, setActiveChapter] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -662,14 +663,12 @@ export default function App() {
                 <div><a href="#threat-spectrum" onClick={() => setIsMobileMenuOpen(false)}>Threat Spectrum</a></div>
                 <div><a href="#optimization" onClick={() => setIsMobileMenuOpen(false)}>Optimization Logic</a></div>
                 <div>
-                  <a
-                    href="http://localhost:8501"
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    onClick={onOpenSimulator}
                     className="text-emerald-700 font-bold"
                   >
-                    Launch Live Streamlit App ↗
-                  </a>
+                    Launch Ballistics Lab ↗
+                  </button>
                 </div>
               </motion.div>
             )}
@@ -711,10 +710,8 @@ export default function App() {
 
             {/* Interactive CTA Button: Slide Hover Effect */}
             <motion.div variants={fadeUp}>
-              <a
-                href="http://localhost:8501"
-                target="_blank"
-                rel="noreferrer"
+              <button
+                onClick={onOpenSimulator}
                 className="group relative inline-flex items-center gap-3 bg-[#111] text-white px-7 py-3.5 rounded-md border border-[#111] overflow-hidden shadow-sm transition-all duration-300 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.25)] hover:-translate-y-0.5"
               >
                 {/* Sliding Background Panel */}
@@ -734,7 +731,7 @@ export default function App() {
                   size={14}
                   className="relative z-10 text-gray-400 group-hover:text-black group-hover:translate-x-1 transition-all duration-300"
                 />
-              </a>
+              </button>
             </motion.div>
           </motion.div>
 
@@ -1175,4 +1172,12 @@ export default function App() {
       </AnimatePresence>
     </div>
   );
+}
+
+export default function AppRoot() {
+  const [page, setPage] = useState<"landing" | "simulator">("landing");
+  if (page === "simulator") {
+    return <SimulatorPage onBack={() => setPage("landing")} />;
+  }
+  return <App onOpenSimulator={() => setPage("simulator")} />;
 }
