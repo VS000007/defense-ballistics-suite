@@ -1,0 +1,473 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "description": "Synthetic Candidate Sites Polygon Collection",
+    "coordinate_system": "Abstract Cartesian Local Grid (km)",
+    "safety_disclaimer": "Academic synthetic simulation \u2014 not for operational use.",
+    "random_seed": 42
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S01",
+        "normalized_cost": 6.83,
+        "capacity": 5,
+        "access_score": 0.853,
+        "communication_score": 0.685,
+        "sensor_score": 0.564,
+        "quality_score": 0.716
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              18.124,
+              22.1
+            ],
+            [
+              14.066,
+              17.28
+            ],
+            [
+              15.232,
+              16.697
+            ],
+            [
+              17.02,
+              17.514
+            ],
+            [
+              18.908,
+              19.397
+            ],
+            [
+              18.124,
+              22.1
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S02",
+        "normalized_cost": 3.16,
+        "capacity": 4,
+        "access_score": 0.776,
+        "communication_score": 0.845,
+        "sensor_score": 0.934,
+        "quality_score": 0.844
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              30.143,
+              27.408
+            ],
+            [
+              30.023,
+              22.85
+            ],
+            [
+              32.117,
+              22.696
+            ],
+            [
+              33.215,
+              22.71
+            ],
+            [
+              34.112,
+              24.607
+            ],
+            [
+              30.143,
+              27.408
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S03",
+        "normalized_cost": 4.91,
+        "capacity": 3,
+        "access_score": 0.559,
+        "communication_score": 0.812,
+        "sensor_score": 0.52,
+        "quality_score": 0.623
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              52.164,
+              20.302
+            ],
+            [
+              51.363,
+              21.41
+            ],
+            [
+              50.506,
+              21.464
+            ],
+            [
+              47.057,
+              18.57
+            ],
+            [
+              46.371,
+              18.558
+            ],
+            [
+              48.245,
+              14.816
+            ],
+            [
+              52.164,
+              20.302
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S04",
+        "normalized_cost": 6.19,
+        "capacity": 2,
+        "access_score": 0.567,
+        "communication_score": 0.466,
+        "sensor_score": 0.668,
+        "quality_score": 0.567
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.358,
+              23.637
+            ],
+            [
+              69.405,
+              22.685
+            ],
+            [
+              69.743,
+              20.959
+            ],
+            [
+              70.684,
+              19.78
+            ],
+            [
+              71.227,
+              19.328
+            ],
+            [
+              72.509,
+              19.399
+            ],
+            [
+              72.591,
+              19.5
+            ],
+            [
+              73.358,
+              23.637
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S05",
+        "normalized_cost": 7.42,
+        "capacity": 2,
+        "access_score": 0.654,
+        "communication_score": 0.535,
+        "sensor_score": 0.701,
+        "quality_score": 0.632
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              88.449,
+              36.323
+            ],
+            [
+              85.356,
+              38.517
+            ],
+            [
+              84.374,
+              38.131
+            ],
+            [
+              83.99,
+              38.595
+            ],
+            [
+              82.307,
+              33.992
+            ],
+            [
+              83.589,
+              32.717
+            ],
+            [
+              86.678,
+              32.792
+            ],
+            [
+              88.449,
+              36.323
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S06",
+        "normalized_cost": 5.37,
+        "capacity": 2,
+        "access_score": 0.55,
+        "communication_score": 0.501,
+        "sensor_score": 0.901,
+        "quality_score": 0.641
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              25.93,
+              62.413
+            ],
+            [
+              25.34,
+              63.059
+            ],
+            [
+              20.663,
+              63.985
+            ],
+            [
+              19.72,
+              62.693
+            ],
+            [
+              18.61,
+              63.143
+            ],
+            [
+              17.919,
+              61.436
+            ],
+            [
+              19.11,
+              56.911
+            ],
+            [
+              25.93,
+              62.413
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S07",
+        "normalized_cost": 2.63,
+        "capacity": 3,
+        "access_score": 0.629,
+        "communication_score": 0.472,
+        "sensor_score": 0.697,
+        "quality_score": 0.602
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              46.403,
+              57.831
+            ],
+            [
+              44.027,
+              57.653
+            ],
+            [
+              42.318,
+              53.543
+            ],
+            [
+              45.161,
+              52.002
+            ],
+            [
+              46.912,
+              52.587
+            ],
+            [
+              46.403,
+              57.831
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S08",
+        "normalized_cost": 7.87,
+        "capacity": 3,
+        "access_score": 0.446,
+        "communication_score": 0.708,
+        "sensor_score": 0.695,
+        "quality_score": 0.599
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              70.085,
+              66.584
+            ],
+            [
+              69.383,
+              67.538
+            ],
+            [
+              66.03,
+              63.9
+            ],
+            [
+              65.187,
+              63.273
+            ],
+            [
+              70.468,
+              63.745
+            ],
+            [
+              70.085,
+              66.584
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S09",
+        "normalized_cost": 4.11,
+        "capacity": 5,
+        "access_score": 0.763,
+        "communication_score": 0.835,
+        "sensor_score": 0.834,
+        "quality_score": 0.806
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              84.081,
+              78.558
+            ],
+            [
+              79.551,
+              82.197
+            ],
+            [
+              78.47,
+              80.718
+            ],
+            [
+              76.549,
+              79.394
+            ],
+            [
+              76.97,
+              78.51
+            ],
+            [
+              76.138,
+              77.496
+            ],
+            [
+              84.081,
+              78.558
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "site_id": "S10",
+        "normalized_cost": 3.92,
+        "capacity": 2,
+        "access_score": 0.915,
+        "communication_score": 0.537,
+        "sensor_score": 0.472,
+        "quality_score": 0.669
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              42.732,
+              83.133
+            ],
+            [
+              38.498,
+              85.984
+            ],
+            [
+              34.476,
+              85.71
+            ],
+            [
+              34.264,
+              80.659
+            ],
+            [
+              40.094,
+              78.178
+            ],
+            [
+              42.732,
+              83.133
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
