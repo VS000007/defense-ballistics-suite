@@ -621,14 +621,12 @@ function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
               <a href="#optimization" className="hover:text-black hover:underline transition-colors">
                 Solver
               </a>
-              <a
-                href="http://localhost:8501"
-                target="_blank"
-                rel="noreferrer"
+              <button
+                onClick={onOpenSimulator}
                 className="text-emerald-700 font-bold hover:text-emerald-900 flex items-center gap-1"
               >
                 Simulator <ExternalLink size={11} />
-              </a>
+              </button>
             </div>
 
             {/* Hamburger Button */}
@@ -986,14 +984,12 @@ function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
               <div className="text-[10px] font-mono tracking-widest text-gray-500 uppercase">
                 DEFENSE SIMULATION ENGINE • COIN-OR CBC SOLVER
               </div>
-              <a
-                href="http://localhost:8501"
-                target="_blank"
-                rel="noreferrer"
+              <button
+                onClick={onOpenSimulator}
                 className="inline-flex items-center gap-2 text-xs font-mono text-white bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded transition-colors uppercase tracking-widest font-semibold"
               >
                 Run Live Benchmark <ExternalLink size={12} />
-              </a>
+              </button>
             </div>
           </div>
         </div>
@@ -1017,14 +1013,12 @@ function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-            <a
-              href="http://localhost:8501"
-              target="_blank"
-              rel="noreferrer"
+            <button
+              onClick={onOpenSimulator}
               className="px-6 py-3.5 bg-white text-black font-mono text-xs uppercase tracking-widest font-bold rounded hover:bg-gray-200 transition-colors text-center"
             >
               Open Full Simulator Dashboard ↗
-            </a>
+            </button>
           </div>
         </div>
 
