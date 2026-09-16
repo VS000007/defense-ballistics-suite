@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import SimulatorPage from "./SimulatorPage";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -439,7 +438,7 @@ function BlueprintVehicleAnimation({
   );
 }
 
-function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
+function App() {
   const [activeChapter, setActiveChapter] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -622,7 +621,7 @@ function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
                 Solver
               </a>
               <button
-                onClick={onOpenSimulator}
+                onClick={()=>window.location.href='/simulator.html'}
                 className="text-emerald-700 font-bold hover:text-emerald-900 flex items-center gap-1"
               >
                 Simulator <ExternalLink size={11} />
@@ -662,7 +661,7 @@ function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
                 <div><a href="#optimization" onClick={() => setIsMobileMenuOpen(false)}>Optimization Logic</a></div>
                 <div>
                   <button
-                    onClick={onOpenSimulator}
+                    onClick={()=>window.location.href='/simulator.html'}
                     className="text-emerald-700 font-bold"
                   >
                     Launch Ballistics Lab ↗
@@ -709,7 +708,7 @@ function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
             {/* Interactive CTA Button: Slide Hover Effect */}
             <motion.div variants={fadeUp}>
               <button
-                onClick={onOpenSimulator}
+                onClick={()=>window.location.href='/simulator.html'}
                 className="group relative inline-flex items-center gap-3 bg-[#111] text-white px-7 py-3.5 rounded-md border border-[#111] overflow-hidden shadow-sm transition-all duration-300 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.25)] hover:-translate-y-0.5"
               >
                 {/* Sliding Background Panel */}
@@ -985,7 +984,7 @@ function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
                 DEFENSE SIMULATION ENGINE • COIN-OR CBC SOLVER
               </div>
               <button
-                onClick={onOpenSimulator}
+                onClick={()=>window.location.href='/simulator.html'}
                 className="inline-flex items-center gap-2 text-xs font-mono text-white bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded transition-colors uppercase tracking-widest font-semibold"
               >
                 Run Live Benchmark <ExternalLink size={12} />
@@ -1014,7 +1013,7 @@ function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <button
-              onClick={onOpenSimulator}
+              onClick={()=>window.location.href='/simulator.html'}
               className="px-6 py-3.5 bg-white text-black font-mono text-xs uppercase tracking-widest font-bold rounded hover:bg-gray-200 transition-colors text-center"
             >
               Open Full Simulator Dashboard ↗
@@ -1169,9 +1168,5 @@ function App({ onOpenSimulator }: { onOpenSimulator: () => void }) {
 }
 
 export default function AppRoot() {
-  const [page, setPage] = useState<"landing" | "simulator">("landing");
-  if (page === "simulator") {
-    return <SimulatorPage onBack={() => setPage("landing")} />;
-  }
-  return <App onOpenSimulator={() => setPage("simulator")} />;
+  return <App />;
 }
