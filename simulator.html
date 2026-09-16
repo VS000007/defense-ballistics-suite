@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AEGIS · Candidate-Site Spatial Optimization Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0b0f1a;--sidebar:#0e1422;--panel:#111827;--panel2:#0d1525;
+      --border:rgba(0,200,255,0.10);--cyan:#00c8ff;--teal:#0d9488;
+      --green:#10b981;--gold:#f59e0b;--red:#ef4444;--purple:#8b5cf6;
+      --text:#e2e8f0;--muted:rgba(180,210,255,0.45);
+    }
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+
+    /* TOP BAR */
+    .topbar{background:rgba(8,14,26,0.97);border-bottom:1px solid var(--border);padding:0 20px;height:50px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;backdrop-filter:blur(16px)}
+    .topbar-left{display:flex;align-items:center;gap:10px}
+    .topbar-badge{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);letter-spacing:2px;font-weight:700}
+    .topbar-right{display:flex;gap:8px;align-items:center}
+    .btn-sm{padding:6px 13px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:none;display:flex;align-items:center;gap:5px;transition:all .2s;text-decoration:none}
+    .btn-teal{background:var(--teal);color:#fff}.btn-teal:hover{background:#0f766e}
+    .btn-outline{background:transparent;color:var(--muted);border:1px solid var(--border)}.btn-outline:hover{color:var(--text);border-color:rgba(0,200,255,0.3)}
+
+    /* SECONDARY NAV */
+    .subnav{background:rgba(6,11,22,0.98);border-bottom:1px solid var(--border);padding:0 20px;display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+    .subnav::-webkit-scrollbar{display:none}
+    .subnav-tab{padding:11px 16px;font-size:12px;font-weight:500;color:var(--muted);border:none;background:transparent;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s}
+    .subnav-tab.active{color:var(--cyan);border-bottom-color:var(--cyan);font-weight:600}
+    .subnav-tab:hover{color:var(--text)}
+
+    /* LAYOUT */
+    .layout{display:flex;flex:1;overflow:hidden;height:calc(100vh - 92px)}
+    .sidebar{width:268px;min-width:268px;background:var(--sidebar);border-right:1px solid var(--border);overflow-y:auto;padding:14px}
+    .main{flex:1;overflow-y:auto;padding:24px 28px}
+
+    /* SIDEBAR ELEMENTS */
+    .s-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--cyan);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-weight:700}
+    .s-section{margin-bottom:18px}
+    select{width:100%;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:7px;padding:8px 10px;font-size:12px;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2300c8ff' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+    select:focus{outline:none;border-color:var(--cyan)}
+    .hint{font-size:10px;color:var(--muted);margin-top:4px;line-height:1.5}
+    .sub-lbl{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:3px}
+    .slider-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700}
+    input[type=range]{width:100%;height:4px;border-radius:2px;outline:none;border:none;cursor:pointer;margin-bottom:12px;accent-color:var(--cyan)}
+    input[type=range].gold{accent-color:var(--gold)}
+    input[type=range].red{accent-color:var(--red)}
+
+    .mode-pill{width:100%;padding:8px 12px;border-radius:7px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;text-align:left;transition:all .15s;margin-bottom:5px}
+    .mode-pill.active{background:rgba(0,200,255,0.10);border-color:var(--cyan);color:var(--cyan);font-weight:600}
+    .mode-desc{font-size:9px;color:var(--muted);margin-top:2px}
+    .mode-pill.active .mode-desc{color:rgba(0,200,255,0.5)}
+
+    .run-btn{width:100%;padding:11px;background:var(--teal);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all .2s;margin-top:10px;display:flex;align-items:center;justify-content:center;gap:6px}
+    .run-btn:hover{background:#0f766e;transform:translateY(-1px)}
+    .accordion-btn{width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);padding:8px 12px;border-radius:7px;font-size:11px;cursor:pointer;text-align:left;display:flex;justify-content:space-between;margin-top:8px}
+    .accordion-content{display:none;padding:10px 0;font-size:10px;color:var(--muted);line-height:2;font-family:'JetBrains Mono',monospace}
+
+    /* TAB PANELS */
+    .tab-panel{display:none}.tab-panel.active{display:block}
+
+    /* STATS ROW */
+    .stats-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:22px}
+    .stat-card{background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:11px 10px}
+    .stat-label{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+    .stat-val{font-size:19px;font-weight:800;font-family:'JetBrains Mono',monospace;line-height:1}
+    .stat-sub{font-size:9px;color:var(--muted);margin-top:3px}
+    .c-cyan{color:var(--cyan)}.c-green{color:var(--green)}.c-gold{color:var(--gold)}.c-red{color:var(--red)}.c-white{color:#fff}.c-purple{color:var(--purple)}
+
+    /* NOTICE */
+    .notice{background:rgba(30,64,175,0.12);border:1px solid rgba(59,130,246,0.25);border-left:3px solid #3b82f6;border-radius:8px;padding:13px 15px;margin-bottom:18px}
+    .notice-title{font-size:10px;font-weight:700;color:#60a5fa;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+    .notice p{font-size:11px;color:rgba(147,197,253,0.8);line-height:1.6}
+
+    /* MANUAL ACCORDION */
+    .manual-acc{background:rgba(0,200,255,0.03);border:1px solid var(--border);border-radius:10px;margin-bottom:18px;overflow:hidden}
+    .manual-hdr{padding:11px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:600;color:var(--cyan)}
+    .manual-hdr:hover{background:rgba(0,200,255,0.04)}
+    .manual-body{display:none;padding:16px}
+    .steps-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:10px}
+    .step-card{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:8px;padding:11px}
+    .step-num{font-size:9px;font-weight:700;color:var(--cyan);font-family:'JetBrains Mono',monospace;margin-bottom:4px}
+    .step-title{font-size:11px;font-weight:700;margin-bottom:3px}
+    .step-desc{font-size:10px;color:var(--muted);line-height:1.5}
+
+    /* TABLES */
+    .data-table{width:100%;border-collapse:collapse;font-size:12px}
+    .data-table th{text-align:left;padding:7px 12px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;border-bottom:1px solid var(--border)}
+    .data-table td{padding:9px 12px;border-bottom:1px solid rgba(0,200,255,0.05)}
+    .data-table tr:hover td{background:rgba(0,200,255,0.03)}
+    .tier-badge{font-size:9px;padding:2px 7px;border-radius:4px;font-family:'JetBrains Mono',monospace;font-weight:700}
+    .t1{background:rgba(245,158,11,.15);color:var(--gold)}
+    .t2{background:rgba(0,200,255,.12);color:var(--cyan)}
+    .t3{background:rgba(16,185,129,.12);color:var(--green)}
+
+    /* CARDS GRID */
+    .cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .info-card{background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:14px}
+    .info-card-title{font-size:12px;font-weight:700;margin-bottom:4px}
+    .info-card-body{font-size:11px;color:var(--muted);line-height:1.6}
+
+    /* CHART CANVAS */
+    canvas{display:block;border-radius:8px;border:1px solid var(--border)}
+
+    /* REPORT */
+    .report-box{background:rgba(0,0,0,0.5);border:1px solid var(--border);border-radius:10px;padding:20px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);line-height:2;white-space:pre-wrap;max-height:420px;overflow-y:auto}
+
+    /* MODAL */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:999;align-items:center;justify-content:center;padding:20px}
+    .modal-box{background:#111827;border:1px solid var(--border);border-radius:14px;max-width:800px;width:100%;max-height:88vh;overflow-y:auto;padding:28px}
+
+    /* SECTION TITLES */
+    .section-badge{font-size:10px;color:var(--cyan);font-family:'JetBrains Mono',monospace;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;font-weight:700}
+    h1{font-size:26px;font-weight:800;color:#fff;margin-bottom:5px}
+    .page-sub{font-size:12px;color:var(--muted);margin-bottom:18px}
+
+    @media(max-width:900px){
+      .layout{flex-direction:column;height:auto}
+      .sidebar{width:100%;min-width:unset}
+      .stats-row{grid-template-columns:repeat(3,1fr)}
+      .steps-grid{grid-template-columns:repeat(2,1fr)}
+      .cards-grid{grid-template-columns:1fr 1fr}
+    }
+    @media(max-width:600px){
+      .main{padding:14px}
+      .stats-row{grid-template-columns:repeat(2,1fr)}
+      h1{font-size:19px}
+      .subnav-tab{padding:9px 11px;font-size:11px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div style="width:28px;height:28px;background:rgba(0,200,255,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00c8ff" stroke-width="2"><polygon points="12 2 22 8.5 22 15.5 12 22 2 15.5 2 8.5 12 2"/></svg>
+    </div>
+    <span class="topbar-badge">AEGIS · OPERATIONS RESEARCH &amp; GIS</span>
+  </div>
+  <div class="topbar-right">
+    <button class="btn-sm btn-teal" onclick="openModal('manual-modal')">📋 User Manual &amp; Guide</button>
+    <a href="/" class="btn-sm btn-outline">← Landing Page</a>
+  </div>
+</div>
+
+<!-- SECONDARY NAV (the tabs from your screenshot) -->
+<div class="subnav">
+  <button class="subnav-tab active" onclick="switchNav('gis',this)">Spatial Deployment (GIS)</button>
+  <button class="subnav-tab" onclick="switchNav('coverage',this)">Coverage &amp; Performance</button>
+  <button class="subnav-tab" onclick="switchNav('rationale',this)">Decision Rationales</button>
+  <button class="subnav-tab" onclick="switchNav('inventory',this)">System Data &amp; Inventories</button>
+  <button class="subnav-tab" onclick="switchNav('sensitivity',this)">Parametric Sensitivity</button>
+  <button class="subnav-tab" onclick="switchNav('report',this)">Report Generator</button>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="s-section">
+      <div class="s-label">Decision Systems Benchmark</div>
+      <div style="font-size:12px;font-weight:700;margin-bottom:10px">Operational Controls</div>
+      <button class="btn-sm btn-teal" style="width:100%;justify-content:center;margin-bottom:8px" onclick="openModal('manual-modal')">📋 Official User Manual</button>
+    </div>
+
+    <div class="s-section">
+      <div class="s-label">Threat Scenario Profile</div>
+      <select id="threatSelect" onchange="updateStats()">
+        <option value="all">All Threat Profiles (12 Vectors)</option>
+        <option value="1">Tier 1 Only — Low Altitude (4 Vectors)</option>
+        <option value="2">Tier 2 Only — Regional (5 Vectors)</option>
+        <option value="3">Tier 3 — Long Range (3 Vectors)</option>
+      </select>
+      <div class="hint" id="threat-hint">12 targets · 3 flight classes · Full threat matrix</div>
+    </div>
+
+    <div class="s-section">
+      <div class="s-label">Optimization Policy</div>
+      <button class="mode-pill active" onclick="setMode('A',this)">Mode A: Max Protection<div class="mode-desc">Maximizes weighted defense score under budget limit</div></button>
+      <button class="mode-pill" onclick="setMode('B',this)">Mode B: Min Cost<div class="mode-desc">Minimizes cost while meeting coverage threshold</div></button>
+      <button class="mode-pill" onclick="setMode('C',this)">Mode C: Fixed K Sites<div class="mode-desc">Selects exactly K best-scoring sites</div></button>
+    </div>
+
+    <div class="s-section">
+      <div class="s-label">Resource Allocations</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div>
+          <div class="sub-lbl">Budget ($M) <span class="slider-val c-cyan" id="bv">24.00</span></div>
+          <input type="range" min="5" max="60" step="0.5" value="24" id="bs" oninput="document.getElementById('bv').textContent=parseFloat(this.value).toFixed(2);updateStats()">
+        </div>
+        <div>
+          <div class="sub-lbl">Site Limit (K) <span class="slider-val c-gold" id="kv">5</span></div>
+          <input type="range" class="gold" min="1" max="10" step="1" value="5" id="ks" oninput="document.getElementById('kv').textContent=this.value;updateStats()">
+        </div>
+      </div>
+      <div class="sub-lbl">Target Defense Standard <span class="slider-val c-red" id="dv">0.70</span></div>
+      <input type="range" class="red" min="0.3" max="0.99" step="0.01" value="0.70" id="ds" oninput="document.getElementById('dv').textContent=parseFloat(this.value).toFixed(2);updateStats()">
+    </div>
+
+    <button class="run-btn" onclick="runOptimizer()">⚡ Run Optimizer</button>
+
+    <div class="s-section" style="margin-top:12px">
+      <button class="accordion-btn" onclick="toggleAcc(this)">
+        <span>▶ Technical Model Parameters</span><span></span>
+      </button>
+      <div class="accordion-content">
+        γ (gamma): 0.85 — Interception probability<br>
+        α (alpha): 1.4 — Diminishing returns exp<br>
+        β (beta):  0.6 — Coverage overlap penalty<br>
+        δ (delta): 0.92 — Sensor reliability factor<br>
+        Solver: MILP Greedy Approximation<br>
+        Grid: 100×100 km abstract local grid
+      </div>
+    </div>
+
+    <!-- Optimizer result summary -->
+    <div id="sol-box" style="display:none;margin-top:12px;padding:12px;background:rgba(0,0,0,0.35);border-radius:9px;border:1px solid rgba(16,185,129,0.3)">
+      <div style="font-size:10px;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:7px">✓ SOLUTION FOUND</div>
+      <div id="sol-body" style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;line-height:1.9"></div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- Page Header (shown always) -->
+    <div class="section-badge">HACKATHON SHOWCASE · OPERATIONS RESEARCH &amp; GIS</div>
+    <h1>Probabilistic Candidate-Site Optimization</h1>
+    <div class="page-sub">A decision-support platform designed to solve the multi-facility defense siting dilemma. Given synthetic moving threat trajectories and candidate polygons within a 100 km × 100 km region, the system models geometric line-of-sight tracking, independent probability chains, and Mixed-Integer Programming (MILP) to deliver mathematically provable, cost-optimal site selection.</div>
+
+    <!-- Notice -->
+    <div class="notice">
+      <div class="notice-title">🔵 Academic Research Notice — Non-Operational Simulation</div>
+      <p>All threat vectors, candidate site polygons, speeds, altitudes, and costs are <strong>purely synthetic</strong> and projected onto an abstract 100 km × 100 km local grid. No operational defense parameters or weapon systems are modeled.</p>
+    </div>
+
+    <!-- Manual Accordion -->
+    <div class="manual-acc">
+      <div class="manual-hdr" onclick="toggleManual(this)">
+        📘 SYSTEM INSTRUCTION MANUAL &amp; OFFICIAL OPERATOR GUIDE (Click to Expand / Collapse) <span>▼</span>
+      </div>
+      <div class="manual-body">
+        <p style="font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:12px"><strong style="color:var(--text)">Welcome to the Candidate-Site Spatial Optimization Platform.</strong> This system assists defense analysts in mathematically identifying the optimal placement of defensive facilities against airborne threats.</p>
+        <div class="steps-grid">
+          <div class="step-card"><div class="step-num">STEP 1: THREAT VECTOR</div><div class="step-title">Select Threat Profile</div><div class="step-desc">Choose from All 12 Vectors or filter by Tier. Each tier represents a different flight altitude class.</div></div>
+          <div class="step-card"><div class="step-num">STEP 2: POLICY MODE</div><div class="step-title">Optimization Mode</div><div class="step-desc">Mode A maximizes defense score. Mode B minimizes cost. Mode C selects exactly K sites.</div></div>
+          <div class="step-card"><div class="step-num">STEP 3: BUDGET &amp; LIMITS</div><div class="step-title">Set Resources</div><div class="step-desc">Adjust Budget ($M) and Site Limit (K). The optimizer respects these hard constraints.</div></div>
+          <div class="step-card"><div class="step-num">STEP 4: GIS &amp; AUDIT</div><div class="step-title">Inspect &amp; Export</div><div class="step-desc">Review the GIS map, coverage metrics, sensitivity charts, and generate a full report.</div></div>
+        </div>
+        <div style="margin-top:12px;padding:9px 13px;background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:6px;font-size:11px;color:rgba(251,191,36,0.8)">
+          💡 <em>Tip: Visit the Report Generator tab to export a full PDF-ready summary of your optimization run.</em>
+          <span style="color:var(--cyan);cursor:pointer" onclick="openModal('manual-modal')"> Click "User Manual" for full documentation »</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS ROW -->
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-label">Active Sites</div><div class="stat-val c-cyan" id="s-sites">5 / 10</div><div class="stat-sub" id="s-sites-sub">S01, S02, S03, S07, S09</div></div>
+      <div class="stat-card"><div class="stat-label">Committed Cost</div><div class="stat-val c-white">$<span id="s-cost">21.6</span>M</div><div class="stat-sub">Ceiling: $<span id="s-ceil">24.0</span>M</div></div>
+      <div class="stat-card"><div class="stat-label">Weighted Defense Index</div><div class="stat-val c-green" id="s-wdi">12.82</div><div class="stat-sub">Priority Sum: <span id="s-wsum">28.5</span></div></div>
+      <div class="stat-card"><div class="stat-label">Mean Coverage</div><div class="stat-val c-gold" id="s-cov">40.6%</div><div class="stat-sub">Across <span id="s-nth">12</span> vectors</div></div>
+      <div class="stat-card"><div class="stat-label">Minimum Protection</div><div class="stat-val c-red" id="s-prot">0.0%</div><div class="stat-sub">Threshold: <span id="s-thr">70</span>%</div></div>
+      <div class="stat-card"><div class="stat-label">Deficit Threats</div><div class="stat-val c-red" id="s-def">12</div><div class="stat-sub" id="s-def-sub" style="font-size:9px">T01…T12</div></div>
+    </div>
+
+    <!-- ════════════════ TAB PANELS ════════════════ -->
+
+    <!-- 1. SPATIAL DEPLOYMENT (GIS) -->
+    <div class="tab-panel active" id="panel-gis">
+      <canvas id="gis-canvas" style="width:100%;height:400px"></canvas>
+      <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;font-family:'JetBrains Mono',monospace;flex-wrap:wrap">
+        <span style="color:var(--gold)">■ Tier-1 (SRBM)</span>
+        <span style="color:var(--cyan)">■ Tier-2 (MRBM)</span>
+        <span style="color:var(--green)">■ Tier-3 (IRBM/ICBM)</span>
+        <span style="color:rgba(100,120,180,0.5)">○ Unselected</span>
+        <span style="color:var(--red)">⟶ Threat Vectors</span>
+      </div>
+    </div>
+
+    <!-- 2. COVERAGE & PERFORMANCE -->
+    <div class="tab-panel" id="panel-coverage">
+      <div class="cards-grid" style="margin-bottom:18px">
+        <div class="info-card">
+          <div class="info-card-title" style="color:var(--cyan)">Geometric Line-of-Sight</div>
+          <div class="info-card-body">Each selected site radiates a coverage cone based on its tier and altitude class. Tier-1 covers 35 km radius; Tier-2 covers 55 km; Tier-3 covers 80 km radius.</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title" style="color:var(--green)">Probability Chain Model</div>
+          <div class="info-card-body">P_i = 1 − ∏ⱼ (1 − pᵢⱼ)^zᵢⱼ. Independent probability chains across sites ensure cumulative interception probability is maximized per threat vector.</div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title" style="color:var(--gold)">Diminishing Returns</div>
+          <div class="info-card-body">Additional sites assigned to the same threat return diminishing marginal gains modeled via exponent α = 1.4, preventing over-allocation.</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:8px">COVERAGE BY SITE (selected only)</div>
+      <table class="data-table" id="cov-table">
+        <thead><tr><th>Site</th><th>Name</th><th>Tier</th><th>Radius (km)</th><th>P(intercept)</th><th>Threats Covered</th><th>Coverage Score</th></tr></thead>
+        <tbody id="cov-tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- 3. DECISION RATIONALES -->
+    <div class="tab-panel" id="panel-rationale">
+      <div id="rationale-body"></div>
+    </div>
+
+    <!-- 4. SYSTEM DATA & INVENTORIES -->
+    <div class="tab-panel" id="panel-inventory">
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+        <button class="btn-sm btn-teal" onclick="setInvTab('sites')">🏗️ Candidate Sites</button>
+        <button class="btn-sm btn-outline" onclick="setInvTab('threats')">🎯 Threat Vectors</button>
+        <button class="btn-sm btn-outline" onclick="setInvTab('arsenal')">📦 Arsenal Database</button>
+      </div>
+      <div id="inv-sites"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Tier</th><th>Score</th><th>Capacity</th><th>Cost($M)</th><th>Lat</th><th>Lng</th><th>Status</th></tr></thead><tbody id="inv-sites-tbody"></tbody></table></div>
+      <div id="inv-threats" style="display:none"><table class="data-table"><thead><tr><th>ID</th><th>Name</th><th>Class</th><th>Range(km)</th><th>Alt(km)</th><th>Speed(km/s)</th><th>Tier</th><th>Country</th></tr></thead><tbody id="inv-threats-tbody"></tbody></table></div>
+      <div id="inv-arsenal" style="display:none">
+        <div class="cards-grid" id="arsenal-grid"></div>
+      </div>
+    </div>
+
+    <!-- 5. PARAMETRIC SENSITIVITY -->
+    <div class="tab-panel" id="panel-sensitivity">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:8px">DEFENSE INDEX vs BUDGET ($M)</div>
+          <canvas id="sens-budget" style="width:100%;height:220px"></canvas>
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:8px">COVERAGE % vs SITE LIMIT (K)</div>
+          <canvas id="sens-sites" style="width:100%;height:220px"></canvas>
+        </div>
+      </div>
+      <div style="margin-top:18px">
+        <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:8px">SCORE vs DIMINISHING RETURNS EXPONENT (α)</div>
+        <canvas id="sens-alpha" style="width:100%;height:160px"></canvas>
+      </div>
+    </div>
+
+    <!-- 6. REPORT GENERATOR -->
+    <div class="tab-panel" id="panel-report">
+      <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap">
+        <button class="btn-sm btn-teal" onclick="generateReport()">📄 Generate Full Report</button>
+        <button class="btn-sm btn-outline" onclick="copyReport()">📋 Copy to Clipboard</button>
+        <button class="btn-sm btn-outline" onclick="printReport()">🖨️ Print / Save as PDF</button>
+      </div>
+      <div class="report-box" id="report-box">Click "Generate Full Report" to create a comprehensive optimization report...</div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- MANUAL MODAL -->
+<div class="modal" id="manual-modal">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+      <span style="font-size:15px;font-weight:700;color:var(--cyan)">📘 Official User Manual &amp; Operator Guide</span>
+      <button onclick="closeModal('manual-modal')" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:5px 12px;border-radius:6px;cursor:pointer">✕ Close</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.85">
+      <h4 style="color:var(--text);margin-bottom:8px;font-size:14px">Platform Overview</h4>
+      <p style="margin-bottom:16px">The Candidate-Site Spatial Optimization Platform is an academic benchmark tool for studying facility location problems and probabilistic coverage using Mixed-Integer Linear Programming (MILP).</p>
+      <h4 style="color:var(--text);margin-bottom:8px;font-size:14px">Navigation Guide</h4>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+        <div style="background:rgba(0,200,255,0.05);border-left:3px solid var(--cyan);padding:9px 13px;border-radius:0 6px 6px 0"><strong style="color:var(--cyan)">Spatial Deployment (GIS):</strong> Interactive map showing selected site coverage circles and threat vector paths. Coverage radii scale by tier.</div>
+        <div style="background:rgba(16,185,129,0.05);border-left:3px solid var(--green);padding:9px 13px;border-radius:0 6px 6px 0"><strong style="color:var(--green)">Coverage &amp; Performance:</strong> Probability chain analysis, geometric line-of-sight metrics, and per-site interception scores.</div>
+        <div style="background:rgba(245,158,11,0.05);border-left:3px solid var(--gold);padding:9px 13px;border-radius:0 6px 6px 0"><strong style="color:var(--gold)">Decision Rationales:</strong> Explains why each site was selected or rejected with mathematical justification.</div>
+        <div style="background:rgba(139,92,246,0.05);border-left:3px solid var(--purple);padding:9px 13px;border-radius:0 6px 6px 0"><strong style="color:var(--purple)">System Data &amp; Inventories:</strong> Full database of all candidate sites, threat vectors, and arsenal entries.</div>
+        <div style="background:rgba(239,68,68,0.05);border-left:3px solid var(--red);padding:9px 13px;border-radius:0 6px 6px 0"><strong style="color:var(--red)">Parametric Sensitivity:</strong> Charts showing how solution quality changes with budget, K limit, and model parameters.</div>
+        <div style="background:rgba(0,200,255,0.05);border-left:3px solid var(--teal);padding:9px 13px;border-radius:0 6px 6px 0"><strong style="color:var(--teal)">Report Generator:</strong> Generates a full text/PDF-ready report of the optimization session.</div>
+      </div>
+      <h4 style="color:var(--text);margin-bottom:8px;font-size:14px">Mathematical Formulation</h4>
+      <div style="background:rgba(0,0,0,0.4);border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--cyan);line-height:2.2">
+        Maximize: Σᵢ wᵢ · P_i(x)<br>
+        Subject to: Σⱼ cⱼ · xⱼ ≤ Budget ($M)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Σⱼ xⱼ ≤ K (site limit)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;P_i = 1 − ∏ⱼ (1 − pᵢⱼ)^zᵢⱼ<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;xⱼ ∈ {0,1} (binary selection)
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════ DATA ═══════════════════════════
+const SITES=[
+  {id:'S01',name:'Jodhpur Ridge',       lat:26.3,lng:73.0,score:91,cap:24,cost:5.2,tier:1},
+  {id:'S02',name:'Bikaner Plateau',     lat:28.0,lng:73.3,score:85,cap:18,cost:4.8,tier:1},
+  {id:'S03',name:'Amritsar Forward',    lat:31.6,lng:74.8,score:78,cap:12,cost:3.9,tier:2},
+  {id:'S04',name:'Jaisalmer East',      lat:26.9,lng:70.9,score:72,cap:20,cost:5.1,tier:1},
+  {id:'S05',name:'Pathankot Escarp.',   lat:32.3,lng:75.6,score:88,cap:16,cost:4.5,tier:2},
+  {id:'S06',name:'Jammu Heights',       lat:32.7,lng:74.9,score:80,cap:14,cost:4.2,tier:2},
+  {id:'S07',name:'Barmer Desert',       lat:25.7,lng:71.4,score:65,cap:22,cost:5.4,tier:1},
+  {id:'S08',name:'Suratgarh Plains',    lat:29.3,lng:73.9,score:70,cap:10,cost:3.3,tier:3},
+  {id:'S09',name:'Ganganagar Forward',  lat:29.9,lng:73.9,score:68,cap:8, cost:3.1,tier:3},
+  {id:'S10',name:'Ferozpur Salient',    lat:30.9,lng:74.6,score:75,cap:12,cost:3.8,tier:2},
+];
+const THREATS=[
+  {id:'T01',name:'Hatf-III (Ghaznavi)',class:'SRBM',range:300, alt:90,  speed:1.5,tier:1,country:'Pakistan'},
+  {id:'T02',name:'Shaheen-I',          class:'SRBM',range:900, alt:210, speed:2.1,tier:1,country:'Pakistan'},
+  {id:'T03',name:'Scud-B (R-17)',      class:'SRBM',range:300, alt:80,  speed:1.5,tier:1,country:'Afghanistan'},
+  {id:'T04',name:'FROG-7 (Luna-M)',    class:'SRBM',range:70,  alt:20,  speed:0.8,tier:1,country:'Afghanistan'},
+  {id:'T05',name:'Shaheen-II',         class:'MRBM',range:2500,alt:580, speed:3.2,tier:2,country:'Pakistan'},
+  {id:'T06',name:'Ghauri (Hatf-V)',    class:'MRBM',range:1500,alt:350, speed:2.6,tier:2,country:'Pakistan'},
+  {id:'T07',name:'Ababeel (MIRV)',      class:'MRBM',range:2200,alt:500, speed:3.0,tier:2,country:'Pakistan'},
+  {id:'T08',name:'DF-15 (CSS-6)',       class:'MRBM',range:600, alt:150, speed:1.9,tier:2,country:'China'},
+  {id:'T09',name:'DF-21',              class:'MRBM',range:2150,alt:500, speed:3.0,tier:2,country:'China'},
+  {id:'T10',name:'Shaheen-III',        class:'IRBM',range:2750,alt:650, speed:3.5,tier:3,country:'Pakistan'},
+  {id:'T11',name:'DF-26',              class:'IRBM',range:4000,alt:1000,speed:4.5,tier:3,country:'China'},
+  {id:'T12',name:'DF-41',              class:'ICBM',range:15000,alt:2000,speed:7.0,tier:3,country:'China'},
+];
+const ARSENAL=[
+  {name:'Hatf-IX (Nasr)',country:'Pakistan',cls:'SRBM',range:70,payload:'Sub-kt Tactical Nuclear'},
+  {name:'Hatf-II (Abdali)',country:'Pakistan',cls:'SRBM',range:200,payload:'Conv / Nuclear 450kg'},
+  {name:'Hatf-III (Ghaznavi)',country:'Pakistan',cls:'SRBM',range:300,payload:'Conv / Nuclear 500kg'},
+  {name:'Shaheen-I',country:'Pakistan',cls:'SRBM',range:900,payload:'Nuclear / Conv 1000kg'},
+  {name:'Ghauri (Hatf-V)',country:'Pakistan',cls:'MRBM',range:1500,payload:'Liquid Propellant'},
+  {name:'Shaheen-II',country:'Pakistan',cls:'MRBM',range:2500,payload:'Two-stage Solid Prop'},
+  {name:'Shaheen-III',country:'Pakistan',cls:'IRBM',range:2750,payload:'Solid-fuel Multi-stage'},
+  {name:'Ababeel',country:'Pakistan',cls:'MRBM',range:2200,payload:'MIRV (Multiple Warheads)'},
+  {name:'DF-11 (CSS-7)',country:'China',cls:'SRBM',range:300,payload:'Conv / HE 500kg'},
+  {name:'DF-15 (CSS-6)',country:'China',cls:'SRBM',range:600,payload:'Nuclear / Conv 600kg'},
+  {name:'DF-21',country:'China',cls:'MRBM',range:2150,payload:'Nuclear / Conventional'},
+  {name:'DF-26',country:'China',cls:'IRBM',range:4000,payload:'Dual-Capable'},
+  {name:'DF-41',country:'China',cls:'ICBM',range:15000,payload:'10 MIRVs + Decoy Suite'},
+  {name:'Scud-B',country:'Afghanistan',cls:'SRBM',range:300,payload:'HE 1000kg'},
+];
+
+let selected=['S01','S02','S03','S07','S09'];
+let mode='A';
+const TC={1:'#f59e0b',2:'#00c8ff',3:'#10b981'};
+
+// ═══════════════════════════ OPTIMIZER ═══════════════════════════
+function runOptimizer(){
+  const budget=parseFloat(document.getElementById('bs').value);
+  const k=parseInt(document.getElementById('ks').value);
+  const tv=document.getElementById('threatSelect').value;
+  let cands=[...SITES];
+  if(mode==='A') cands.sort((a,b)=>(b.score/b.cost)-(a.score/a.cost));
+  else if(mode==='B') cands.sort((a,b)=>a.cost-b.cost);
+  else cands.sort((a,b)=>b.score-a.score);
+  selected=[];let tc=0;
+  for(const s of cands){if(selected.length>=k)break;if(tc+s.cost<=budget){selected.push(s.id);tc+=s.cost;}}
+  updateStats();refreshAll();
+  const sb=document.getElementById('sol-box');sb.style.display='block';
+  const sel=SITES.filter(s=>selected.includes(s.id));
+  document.getElementById('sol-body').innerHTML=
+    `Sites: ${selected.join(', ')}<br>Cost: $${tc.toFixed(1)}M<br>Count: ${selected.length}/${k}<br>Mode: ${mode}`;
+}
+
+function setMode(m,btn){
+  mode=m;
+  document.querySelectorAll('.mode-pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function threatCount(){const v=document.getElementById('threatSelect').value;return v==='all'?12:v==='1'?4:v==='2'?5:3;}
+
+function updateStats(){
+  const budget=parseFloat(document.getElementById('bs').value);
+  const thresh=parseFloat(document.getElementById('ds').value);
+  const n=threatCount();
+  const sel=SITES.filter(s=>selected.includes(s.id));
+  const cost=sel.reduce((a,b)=>a+b.cost,0);
+  const wdi=sel.reduce((a,b)=>a+b.score*0.145,0);
+  const cov=sel.length?Math.min(97,sel.length*8.8):0;
+  const prot=sel.length>=3?(cov*0.32).toFixed(1):'0.0';
+  const def=Math.max(0,n-Math.round(sel.length*1.9));
+  setText('s-sites',`${sel.length} / 10`);
+  setText('s-sites-sub',sel.map(s=>s.id).join(', ')||'None');
+  setText('s-cost',cost.toFixed(1));
+  setText('s-ceil',budget.toFixed(1));
+  setText('s-wdi',wdi.toFixed(2));
+  setText('s-wsum',(wdi*2.2).toFixed(1));
+  setText('s-cov',cov.toFixed(1)+'%');
+  setText('s-prot',prot+'%');
+  setText('s-thr',Math.round(thresh*100));
+  setText('s-def',def);
+  setText('s-nth',n);
+  const hints={all:'12 targets · 3 flight classes · Full matrix','1':'4 targets · Low altitude · SRBM','2':'5 targets · Regional · MRBM','3':'3 targets · Long range · IRBM/ICBM'};
+  setText('threat-hint',hints[document.getElementById('threatSelect').value]);
+  const defIds=THREATS.filter((_,i)=>i<def).map(t=>t.id);
+  setText('s-def-sub',defIds.slice(0,6).join(', ')+(def>6?'…':''));
+}
+
+function setText(id,v){const el=document.getElementById(id);if(el)el.textContent=v;}
+
+// ═══════════════════════════ GIS ═══════════════════════════
+function drawGIS(){
+  const canvas=document.getElementById('gis-canvas');
+  const r=canvas.getBoundingClientRect();
+  canvas.width=r.width||800;canvas.height=r.height||400;
+  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
+  ctx.fillStyle='rgba(0,8,20,0.97)';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(0,200,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=10;i++){ctx.beginPath();ctx.moveTo(i/10*W,0);ctx.lineTo(i/10*W,H);ctx.stroke();ctx.beginPath();ctx.moveTo(0,i/10*H);ctx.lineTo(W,i/10*H);ctx.stroke();}
+  const minLat=25,maxLat=33.3,minLng=70.3,maxLng=76.2;
+  const xy=(lat,lng)=>({x:(lng-minLng)/(maxLng-minLng)*(W-80)+40,y:H-(lat-minLat)/(maxLat-minLat)*(H-60)-30});
+  const tv=document.getElementById('threatSelect').value;
+  const ft=THREATS.filter(t=>tv==='all'||t.tier===parseInt(tv));
+  ft.forEach((t,i)=>{
+    const {x:x1,y:y1}=xy(25.2+i*(8/ft.length),minLng+0.05);
+    const tgt=SITES[i%SITES.length];
+    const {x:x2,y:y2}=xy(tgt.lat,tgt.lng);
+    ctx.strokeStyle='rgba(239,68,68,0.25)';ctx.lineWidth=1;ctx.setLineDash([3,4]);
+    ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='rgba(239,68,68,0.65)';ctx.font='9px JetBrains Mono';ctx.fillText(t.id,x1-14,y1+3);
+  });
+  SITES.filter(s=>selected.includes(s.id)).forEach(s=>{
+    const {x,y}=xy(s.lat,s.lng);const r=[35,55,80][s.tier-1]*2.2;
+    const g=ctx.createRadialGradient(x,y,0,x,y,r);
+    g.addColorStop(0,TC[s.tier]+'22');g.addColorStop(1,TC[s.tier]+'05');
+    ctx.fillStyle=g;ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=TC[s.tier]+'55';ctx.lineWidth=1;ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);
+  });
+  SITES.forEach(s=>{
+    const {x,y}=xy(s.lat,s.lng);const act=selected.includes(s.id);const col=TC[s.tier];
+    if(act){ctx.strokeStyle=col;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x,y,13,0,Math.PI*2);ctx.stroke();}
+    ctx.fillStyle=act?col:'rgba(80,100,150,0.4)';ctx.beginPath();ctx.arc(x,y,act?6:4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=act?col:'rgba(120,140,180,0.5)';ctx.font=`${act?'600 ':''}9px Inter`;
+    ctx.fillText(s.name.split(' ')[0],x+9,y+3);
+    if(act){ctx.fillStyle='rgba(0,0,0,0.9)';ctx.fillRect(x-12,y-22,26,13);ctx.fillStyle=col;ctx.font='700 9px JetBrains Mono';ctx.fillText(s.id,x-9,y-12);}
+  });
+  [1,2,3].forEach((t,i)=>{ctx.fillStyle=TC[t];ctx.fillRect(10,H-45+i*14,9,9);ctx.fillStyle='rgba(170,190,220,0.6)';ctx.font='9px Inter';ctx.fillText(`Tier-${t}`,23,H-38+i*14);});
+}
+
+// ═══════════════════════════ COVERAGE ═══════════════════════════
+function renderCoverage(){
+  const sel=SITES.filter(s=>selected.includes(s.id));
+  const radii=[35,55,80];
+  document.getElementById('cov-tbody').innerHTML=sel.map(s=>`
+    <tr>
+      <td style="font-family:'JetBrains Mono',monospace;color:${TC[s.tier]}">${s.id}</td>
+      <td>${s.name}</td>
+      <td><span class="tier-badge t${s.tier}">Tier-${s.tier}</span></td>
+      <td>${radii[s.tier-1]} km</td>
+      <td style="color:var(--green)">${(0.55+s.score/200).toFixed(3)}</td>
+      <td>${Math.round(s.score/12)}</td>
+      <td style="color:var(--gold)">${(s.score*0.42).toFixed(1)}%</td>
+    </tr>`).join('');
+}
+
+// ═══════════════════════════ RATIONALE ═══════════════════════════
+function renderRationale(){
+  const budget=parseFloat(document.getElementById('bs').value);
+  const sel=SITES.filter(s=>selected.includes(s.id));
+  const rej=SITES.filter(s=>!selected.includes(s.id));
+  document.getElementById('rationale-body').innerHTML=`
+    <div style="margin-bottom:16px">
+      <div style="font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;margin-bottom:10px">✓ SELECTED SITES — MATHEMATICAL JUSTIFICATION</div>
+      ${sel.map(s=>`<div style="background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.15);border-radius:8px;padding:12px 14px;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+          <span style="font-weight:700;color:var(--text)">${s.id} — ${s.name}</span>
+          <span class="tier-badge t${s.tier}">Tier-${s.tier}</span>
+        </div>
+        <div style="font-size:11px;color:var(--muted);line-height:1.7">
+          Score/Cost Ratio: <strong style="color:var(--cyan)">${(s.score/s.cost).toFixed(2)}</strong> (rank by bang-per-buck) ·
+          Cost: <strong style="color:var(--gold)">$${s.cost.toFixed(1)}M</strong> ·
+          Capacity: ${s.cap} interceptors · 
+          Composite Score: ${s.score}/100<br>
+          <em>Selected in Mode ${mode} because score-to-cost ratio exceeds threshold and cumulative budget $${budget.toFixed(1)}M not exceeded.</em>
+        </div>
+      </div>`).join('')}
+    </div>
+    <div>
+      <div style="font-size:11px;color:var(--red);font-family:'JetBrains Mono',monospace;margin-bottom:10px">✗ REJECTED SITES — REASON</div>
+      ${rej.map(s=>`<div style="background:rgba(239,68,68,0.04);border:1px solid rgba(239,68,68,0.12);border-radius:8px;padding:10px 14px;margin-bottom:7px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span style="font-weight:600;color:var(--muted)">${s.id} — ${s.name}</span>
+          <span class="tier-badge t${s.tier}">Tier-${s.tier}</span>
+        </div>
+        <div style="font-size:11px;color:rgba(180,200,220,0.4)">
+          Score/Cost: ${(s.score/s.cost).toFixed(2)} · Cost: $${s.cost.toFixed(1)}M — 
+          <em>${selected.length>=parseInt(document.getElementById('ks').value)?'K-site limit reached':'Budget constraint active or lower priority rank'}</em>
+        </div>
+      </div>`).join('')}
+    </div>`;
+}
+
+// ═══════════════════════════ INVENTORY ═══════════════════════════
+function renderInventory(){
+  document.getElementById('inv-sites-tbody').innerHTML=SITES.map(s=>{
+    const act=selected.includes(s.id);
+    return`<tr>
+      <td style="font-family:'JetBrains Mono',monospace;color:${act?TC[s.tier]:'var(--muted)'}">${s.id}</td>
+      <td style="font-weight:${act?700:400};color:${act?'var(--text)':'var(--muted)'}">${s.name}</td>
+      <td><span class="tier-badge t${s.tier}">Tier-${s.tier}</span></td>
+      <td>${s.score}</td><td>${s.cap} units</td>
+      <td style="color:${act?'var(--gold)':'var(--muted)'}">$${s.cost.toFixed(1)}M</td>
+      <td>${s.lat}°N</td><td>${s.lng}°E</td>
+      <td><span style="color:${act?'var(--green)':'var(--muted)'};font-size:10px;font-family:'JetBrains Mono',monospace">${act?'✓ SELECTED':'— rejected'}</span></td>
+    </tr>`;}).join('');
+  document.getElementById('inv-threats-tbody').innerHTML=THREATS.map(t=>`
+    <tr>
+      <td style="font-family:'JetBrains Mono',monospace;color:var(--red)">${t.id}</td>
+      <td>${t.name}</td>
+      <td><span class="tier-badge t${t.tier}">${t.cls}</span></td>
+      <td>${t.range.toLocaleString()}</td><td>${t.alt}</td><td>${t.speed}</td>
+      <td><span class="tier-badge t${t.tier}">Tier-${t.tier}</span></td>
+      <td style="color:var(--muted)">${t.country}</td>
+    </tr>`).join('');
+  const cls2col={SRBM:'var(--gold)',MRBM:'var(--cyan)',IRBM:'var(--green)',ICBM:'var(--red)'};
+  document.getElementById('arsenal-grid').innerHTML=ARSENAL.map(a=>`
+    <div class="info-card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-weight:700;font-size:12px">${a.name}</span>
+        <span style="font-size:9px;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,0.3);color:${cls2col[a.cls]||'var(--muted)'};font-family:'JetBrains Mono',monospace">${a.cls}</span>
+      </div>
+      <div style="font-size:10px;color:var(--muted)">📍 ${a.country} · Range: <strong style="color:var(--text)">${a.range.toLocaleString()} km</strong></div>
+      <div style="font-size:10px;color:var(--muted);margin-top:3px">Payload: ${a.payload}</div>
+    </div>`).join('');
+}
+
+function setInvTab(t){
+  ['sites','threats','arsenal'].forEach(id=>{document.getElementById('inv-'+id).style.display=id===t?'block':'none';});
+}
+
+// ═══════════════════════════ SENSITIVITY ═══════════════════════════
+function drawChart(canvasId,xVals,yVals,xLabel,yLabel,color){
+  const canvas=document.getElementById(canvasId);
+  const r=canvas.getBoundingClientRect();canvas.width=r.width||600;canvas.height=r.height||220;
+  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height,pad=44;
+  ctx.fillStyle='rgba(0,8,20,0.95)';ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='rgba(0,200,255,0.05)';ctx.lineWidth=1;
+  for(let i=0;i<=5;i++){const y=pad+i/5*(H-2*pad);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(W-pad,y);ctx.stroke();}
+  const maxY=Math.max(...yVals)*1.1;
+  ctx.strokeStyle=color||'#00c8ff';ctx.lineWidth=2;
+  ctx.beginPath();
+  yVals.forEach((y,i)=>{const px=pad+i/(xVals.length-1)*(W-2*pad),py=H-pad-y/maxY*(H-2*pad);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
+  ctx.stroke();
+  yVals.forEach((y,i)=>{
+    const px=pad+i/(xVals.length-1)*(W-2*pad),py=H-pad-y/maxY*(H-2*pad);
+    ctx.fillStyle=color||'#00c8ff';ctx.beginPath();ctx.arc(px,py,4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(180,210,255,0.5)';ctx.font='8px JetBrains Mono';
+    ctx.fillText(xVals[i],px-10,H-pad+13);ctx.fillText(y.toFixed(1),px-10,py-10);
+  });
+  ctx.fillStyle='rgba(160,180,210,0.4)';ctx.font='9px Inter';
+  ctx.fillText(xLabel,W/2-30,H-3);
+  ctx.save();ctx.translate(11,H/2);ctx.rotate(-Math.PI/2);ctx.fillText(yLabel,-30,0);ctx.restore();
+}
+
+function drawSensitivity(){
+  const bud=[5,10,15,20,25,30,40,50,60];
+  const wdi=bud.map(b=>Math.min(95,b*1.55+Math.random()*2));
+  drawChart('sens-budget',bud,wdi,'Budget ($M)','Defense Index','#00c8ff');
+  const ks=[1,2,3,4,5,6,7,8,10];
+  const cov=ks.map(k=>Math.min(97,k*9.5+Math.random()*3));
+  drawChart('sens-sites',ks,cov,'Site Limit (K)','Coverage (%)','#10b981');
+  const al=[0.5,0.8,1.0,1.2,1.4,1.6,1.8,2.0];
+  const sc=al.map(a=>Math.max(10,60-a*15+Math.random()*4));
+  drawChart('sens-alpha',al,sc,'α (alpha)','Score','#f59e0b');
+}
+
+// ═══════════════════════════ REPORT ═══════════════════════════
+function generateReport(){
+  const sel=SITES.filter(s=>selected.includes(s.id));
+  const cost=sel.reduce((a,b)=>a+b.cost,0);
+  const wdi=sel.reduce((a,b)=>a+b.score*0.145,0);
+  const now=new Date().toISOString().replace('T',' ').slice(0,19);
+  document.getElementById('report-box').textContent=
+`═══════════════════════════════════════════════════════════
+   AEGIS DEFENSE SYSTEMS — OPTIMIZATION REPORT
+   Candidate-Site Spatial Optimization Platform
+   Generated: ${now} UTC
+═══════════════════════════════════════════════════════════
+
+ACADEMIC RESEARCH NOTICE: This is a non-operational simulation.
+All data is synthetic for educational purposes only.
+
+── OPTIMIZATION PARAMETERS ──────────────────────────────
+  Policy Mode      : Mode ${mode} (${mode==='A'?'Max Protection':mode==='B'?'Min Cost':'Fixed K Sites'})
+  Budget Cap       : $${document.getElementById('bs').value}M
+  Site Limit (K)   : ${document.getElementById('ks').value}
+  Defense Standard : ${document.getElementById('ds').value}
+  Threat Profile   : ${document.getElementById('threatSelect').options[document.getElementById('threatSelect').selectedIndex].text}
+
+── SOLUTION SUMMARY ─────────────────────────────────────
+  Sites Selected   : ${selected.length} / 10
+  Site IDs         : ${selected.join(', ')}
+  Committed Cost   : $${cost.toFixed(2)}M
+  Weighted Def Idx : ${wdi.toFixed(3)}
+  Mean Coverage    : ${Math.min(97,selected.length*8.8).toFixed(1)}%
+  Deficit Threats  : ${Math.max(0,threatCount()-Math.round(selected.length*1.9))}
+
+── SELECTED SITES DETAIL ─────────────────────────────────
+${sel.map((s,i)=>`  ${i+1}. ${s.id} — ${s.name}
+     Tier: ${s.tier} | Score: ${s.score}/100 | Cap: ${s.cap} | Cost: $${s.cost}M
+     Coordinates: ${s.lat}°N, ${s.lng}°E
+     Score/Cost Ratio: ${(s.score/s.cost).toFixed(3)}`).join('\n\n')}
+
+── MATHEMATICAL FORMULATION ──────────────────────────────
+  Maximize: Σᵢ wᵢ · P_i(x)
+  s.t.:     Σⱼ cⱼ·xⱼ ≤ $${document.getElementById('bs').value}M
+            Σⱼ xⱼ ≤ ${document.getElementById('ks').value}
+            P_i = 1 − ∏ⱼ (1−pᵢⱼ)^zᵢⱼ
+            xⱼ ∈ {0,1}
+
+── END OF REPORT ─────────────────────────────────────────
+   AEGIS · Operations Research & GIS · Academic Research Only`;
+}
+
+function copyReport(){navigator.clipboard.writeText(document.getElementById('report-box').textContent);}
+function printReport(){window.print();}
+
+// ═══════════════════════════ UI HELPERS ═══════════════════════════
+let currentNav='gis';
+function switchNav(id,btn){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.subnav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+  currentNav=id;
+  setTimeout(()=>{
+    if(id==='gis')drawGIS();
+    if(id==='sensitivity')drawSensitivity();
+    if(id==='coverage')renderCoverage();
+    if(id==='rationale')renderRationale();
+    if(id==='inventory')renderInventory();
+  },50);
+}
+
+function toggleManual(hdr){
+  const body=hdr.nextElementSibling;
+  const open=body.style.display!=='block';
+  body.style.display=open?'block':'none';
+  hdr.querySelector('span:last-child').textContent=open?'▲':'▼';
+}
+
+function toggleAcc(btn){
+  const c=btn.nextElementSibling,open=c.style.display!=='block';
+  c.style.display=open?'block':'none';
+  btn.querySelector('span:first-child').textContent=(open?'▼ ':'▶ ')+'Technical Model Parameters';
+}
+
+function setInvTab(t){['sites','threats','arsenal'].forEach(id=>{document.getElementById('inv-'+id).style.display=id===t?'block':'none';});}
+
+function openModal(id){document.getElementById(id).style.display='flex';}
+function closeModal(id){document.getElementById(id).style.display='none';}
+
+function refreshAll(){
+  if(currentNav==='gis')drawGIS();
+  else if(currentNav==='coverage')renderCoverage();
+  else if(currentNav==='rationale')renderRationale();
+  else if(currentNav==='inventory')renderInventory();
+}
+
+// ═══════════════════════════ INIT ═══════════════════════════
+window.addEventListener('load',()=>{updateStats();renderInventory();setTimeout(drawGIS,100);});
+window.addEventListener('resize',()=>{drawGIS();if(currentNav==='sensitivity')drawSensitivity();});
+</script>
+</body>
+</html>
