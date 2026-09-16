@@ -14,6 +14,9 @@ import {
   X,
 } from "lucide-react";
 
+// Live Global Cloudflare Tunnel for original Streamlit engine
+const STREAMLIT_URL = "https://sega-producers-know-applications.trycloudflare.com";
+
 // --- DATA ---
 const chaptersData = [
   {
@@ -621,7 +624,7 @@ function App() {
                 Solver
               </a>
               <button
-                onClick={()=>window.location.href='/simulator.html'}
+                onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
                 className="text-emerald-700 font-bold hover:text-emerald-900 flex items-center gap-1"
               >
                 Simulator <ExternalLink size={11} />
@@ -661,7 +664,7 @@ function App() {
                 <div><a href="#optimization" onClick={() => setIsMobileMenuOpen(false)}>Optimization Logic</a></div>
                 <div>
                   <button
-                    onClick={()=>window.location.href='/simulator.html'}
+                    onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
                     className="text-emerald-700 font-bold"
                   >
                     Launch Ballistics Lab ↗
@@ -708,7 +711,7 @@ function App() {
             {/* Interactive CTA Button: Slide Hover Effect */}
             <motion.div variants={fadeUp}>
               <button
-                onClick={()=>window.location.href='/simulator.html'}
+                onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
                 className="group relative inline-flex items-center gap-3 bg-[#111] text-white px-7 py-3.5 rounded-md border border-[#111] overflow-hidden shadow-sm transition-all duration-300 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.25)] hover:-translate-y-0.5"
               >
                 {/* Sliding Background Panel */}
@@ -984,7 +987,7 @@ function App() {
                 DEFENSE SIMULATION ENGINE • COIN-OR CBC SOLVER
               </div>
               <button
-                onClick={()=>window.location.href='/simulator.html'}
+                onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
                 className="inline-flex items-center gap-2 text-xs font-mono text-white bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded transition-colors uppercase tracking-widest font-semibold"
               >
                 Run Live Benchmark <ExternalLink size={12} />
@@ -1013,7 +1016,7 @@ function App() {
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <button
-              onClick={()=>window.location.href='/simulator.html'}
+              onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
               className="px-6 py-3.5 bg-white text-black font-mono text-xs uppercase tracking-widest font-bold rounded hover:bg-gray-200 transition-colors text-center"
             >
               Open Full Simulator Dashboard ↗
