@@ -14,8 +14,8 @@ import {
   X,
 } from "lucide-react";
 
-// Live Global Cloudflare Tunnel for original Streamlit engine
-const STREAMLIT_URL = "https://sega-producers-know-applications.trycloudflare.com";
+// Standalone embedded simulator application
+const STREAMLIT_URL = "./simulator.html";
 
 // --- DATA ---
 const chaptersData = [
