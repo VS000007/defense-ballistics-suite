@@ -7,7 +7,7 @@ import { HowItWorks } from './HowItWorks';
 import { SYNTHETIC_SCENARIOS } from '../../lib/syntheticData';
 import { runOptimization } from '../../lib/optimizer';
 import type { OptimizationResult, SimulationParams } from '../../lib/types';
-import { ArrowLeft, ShieldAlert, Cpu, Sparkles } from 'lucide-react';
+import { ArrowLeft, Cpu, Activity } from 'lucide-react';
 
 interface SimulatorDashboardProps {
   onBackToLanding?: () => void;
@@ -72,13 +72,12 @@ export const SimulatorDashboard: React.FC<SimulatorDashboardProps> = ({
   return (
     <div className="min-h-screen bg-[#050914] text-slate-100 flex flex-col font-sans selection:bg-cyan-500 selection:text-black">
       {/* ============================================================ */}
-      {/* 1. HEADER */}
+      {/* 1. CLEAN HEADER */}
       {/* ============================================================ */}
-      <header className="sticky top-0 z-40 bg-[#070d1e]/90 backdrop-blur-md border-b border-cyan-950/80 px-4 md:px-8 py-3.5 shadow-lg">
-        <div className="max-w-[1520px] mx-auto flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-          {/* Brand & Badges */}
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Back button */}
+      <header className="sticky top-0 z-40 bg-[#070d1e]/95 backdrop-blur-md border-b border-cyan-950/80 px-4 md:px-8 py-3.5 shadow-lg">
+        <div className="max-w-[1520px] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          {/* Brand & Nav */}
+          <div className="flex items-center gap-3">
             <button
               onClick={onBackToLanding ? onBackToLanding : () => (window.location.href = '/')}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 text-xs font-mono text-slate-300 hover:text-white transition-all shadow-sm active:scale-95 cursor-pointer"
@@ -96,23 +95,15 @@ export const SimulatorDashboard: React.FC<SimulatorDashboardProps> = ({
               </h1>
             </div>
 
-            {/* Badges */}
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-gradient-to-r from-emerald-950 to-teal-950 border border-emerald-500/50 text-emerald-300 shadow-sm flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-emerald-400" />
-              Hackathon MVP
-            </span>
-
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold uppercase bg-cyan-950/80 border border-cyan-500/40 text-cyan-300">
-              Synthetic Data
+            <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[11px] font-mono bg-cyan-950/80 border border-cyan-500/40 text-cyan-300">
+              <Activity className="w-3 h-3 text-cyan-400" />
+              Interactive 3D Engine
             </span>
           </div>
 
-          {/* Header Safety Disclaimer */}
-          <div className="flex items-center gap-2 bg-slate-950/80 border border-amber-500/30 px-3 py-1.5 rounded-lg text-[11px] font-mono text-amber-300/90 max-w-2xl">
-            <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
-            <span className="truncate sm:whitespace-normal">
-              Academic synthetic simulation — all locations, trajectories, probabilities, and results are fictional and not for operational use.
-            </span>
+          {/* Clean Subtext */}
+          <div className="text-[11px] font-mono text-slate-400 hidden md:block">
+            100 × 100 km Defense Siting & Trajectory Simulation Benchmark
           </div>
         </div>
       </header>
@@ -161,7 +152,7 @@ export const SimulatorDashboard: React.FC<SimulatorDashboardProps> = ({
           />
         </div>
 
-        {/* Collapsible Educational Section: How the simulation works */}
+        {/* Full User Manual & 3D Simulation Walkthrough */}
         <div className="w-full pb-8">
           <HowItWorks />
         </div>
@@ -172,8 +163,8 @@ export const SimulatorDashboard: React.FC<SimulatorDashboardProps> = ({
       {/* ============================================================ */}
       <footer className="bg-[#040711] border-t border-slate-900 py-6 px-4 md:px-8 text-center text-xs font-mono text-slate-500">
         <div className="max-w-[1520px] mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
-          <span>Synthetic Site Optimizer • Academic Research Prototype</span>
-          <span>Fictional 100 × 100 km GIS Benchmark • Strictly Non-Operational</span>
+          <span>Synthetic Site Optimizer • Decision Support System</span>
+          <span>100 × 100 km GIS Benchmark • Academic Demonstration</span>
         </div>
       </footer>
     </div>

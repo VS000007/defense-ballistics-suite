@@ -24,12 +24,10 @@ export const TrajectoryLine: React.FC<TrajectoryLineProps> = ({
 
   // Generate 3D curved trajectory path (Catmull-Rom spline)
   const { curve, lineGeometry } = useMemo(() => {
-    // Local 3D coordinate mapping: X -> X, Z -> Y (height/altitude), Y -> Z (ground depth)
     const pStart = new THREE.Vector3(trajectory.startX, trajectory.startZ, trajectory.startY);
     const pPeak = new THREE.Vector3(trajectory.peakX, trajectory.peakZ, trajectory.peakY);
     const pTarget = new THREE.Vector3(trajectory.targetX, trajectory.targetZ, trajectory.targetY);
 
-    // Create intermediate control points for a smooth synthetic ballistic arc
     const mid1 = new THREE.Vector3().lerpVectors(pStart, pPeak, 0.55);
     mid1.y *= 0.95;
     const mid2 = new THREE.Vector3().lerpVectors(pPeak, pTarget, 0.45);
@@ -45,9 +43,9 @@ export const TrajectoryLine: React.FC<TrajectoryLineProps> = ({
   // Animate target marker traveling along trajectory
   useFrame(({ clock }) => {
     if (!markerRef.current) return;
-    const duration = Math.max(4, 12 / (trajectory.speedKmS || 2));
+    const duration = Math.max(5, 14 / (trajectory.speedKmS || 2));
     const elapsed = clock.getElapsedTime() + timeOffset;
-    const progress = (elapsed % duration) / duration; // 0.0 to 1.0
+    const progress = (elapsed % duration) / duration;
 
     const pos = curve.getPointAt(progress);
     const tangent = curve.getTangentAt(progress);
@@ -60,9 +58,8 @@ export const TrajectoryLine: React.FC<TrajectoryLineProps> = ({
     }
   });
 
-  // Color coding: trajectory is orange/red glowing arc
-  const trajectoryColor = isProtected ? '#f97316' : '#ef4444'; // Orange when protected, Red if uncovered
-  const markerColor = '#fef08a'; // White/yellow target marker
+  const trajectoryColor = isProtected ? '#f97316' : '#ef4444';
+  const markerColor = '#fef08a';
 
   return (
     <group>
@@ -75,7 +72,7 @@ export const TrajectoryLine: React.FC<TrajectoryLineProps> = ({
             new THREE.LineBasicMaterial({
               color: new THREE.Color(trajectoryColor),
               transparent: true,
-              opacity: 0.75,
+              opacity: 0.7,
               linewidth: 2,
             })
           )
@@ -84,7 +81,7 @@ export const TrajectoryLine: React.FC<TrajectoryLineProps> = ({
 
       {/* Target Impact Point on Ground */}
       <mesh
-        position={[trajectory.targetX, 0.1, trajectory.targetY]}
+        position={[trajectory.targetX, 0.08, trajectory.targetY]}
         rotation={[-Math.PI / 2, 0, 0]}
         onPointerOver={(e) => {
           e.stopPropagation();
@@ -92,7 +89,7 @@ export const TrajectoryLine: React.FC<TrajectoryLineProps> = ({
         }}
         onPointerOut={() => onHover?.(null)}
       >
-        <ringGeometry args={[0.8, 1.4, 16]} />
+        <ringGeometry args={[0.9, 1.5, 20]} />
         <meshBasicMaterial
           color={isProtected ? '#10b981' : '#f87171'}
           transparent
@@ -104,21 +101,21 @@ export const TrajectoryLine: React.FC<TrajectoryLineProps> = ({
       {/* Animated Moving Target Marker along Trajectory */}
       <group ref={markerRef}>
         <mesh ref={targetOrbRef} castShadow>
-          <octahedronGeometry args={[0.75, 0]} />
+          <octahedronGeometry args={[0.7, 0]} />
           <meshStandardMaterial
             color={markerColor}
             emissive="#eab308"
-            emissiveIntensity={1.2}
+            emissiveIntensity={1.4}
             roughness={0.2}
           />
         </mesh>
 
         {/* Small Trajectory Particle Flare */}
-        <pointLight color="#fbbf24" intensity={2.5} distance={8} />
+        <pointLight color="#fbbf24" intensity={2.0} distance={6} />
 
-        {/* Small Vector Tag */}
-        <Html distanceFactor={50} position={[0, 1.2, 0]} center>
-          <div className="pointer-events-none select-none px-1.5 py-0.5 rounded bg-amber-950/80 border border-amber-500/50 text-[9px] font-mono text-amber-200 font-bold shadow whitespace-nowrap">
+        {/* Compact Clean Vector Tag */}
+        <Html distanceFactor={60} position={[0, 1.2, 0]} center>
+          <div className="pointer-events-none select-none px-1.5 py-0.5 rounded bg-black/85 border border-amber-500/60 text-[9px] font-mono text-amber-200 font-bold shadow-md whitespace-nowrap backdrop-blur-sm">
             {trajectory.id} {Math.round(combinedProtection * 100)}%
           </div>
         </Html>
