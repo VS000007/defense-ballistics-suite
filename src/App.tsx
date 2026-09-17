@@ -1179,9 +1179,9 @@ function App({ onNavigateToSimulator }: { onNavigateToSimulator?: () => void }) 
 export default function AppRoot() {
   const [route, setRoute] = useState<string>(() => {
     if (typeof window !== "undefined") {
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      if (path.includes("/simulator") || hash.includes("simulator")) {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      if (path.includes("simulator") || hash.includes("simulator")) {
         return "/simulator";
       }
     }
@@ -1190,9 +1190,9 @@ export default function AppRoot() {
 
   useEffect(() => {
     const handleLocationChange = () => {
-      const path = window.location.pathname;
-      const hash = window.location.hash;
-      if (path.includes("/simulator") || hash.includes("simulator")) {
+      const path = window.location.pathname.toLowerCase();
+      const hash = window.location.hash.toLowerCase();
+      if (path.includes("simulator") || hash.includes("simulator")) {
         setRoute("/simulator");
       } else {
         setRoute("/");
@@ -1209,12 +1209,17 @@ export default function AppRoot() {
 
   const navigate = (to: string) => {
     if (typeof window !== "undefined") {
-      try {
-        window.history.pushState({}, "", to);
-      } catch {
-        window.location.hash = to === "/simulator" ? "#simulator" : "";
+      if (to === "/simulator") {
+        window.location.hash = "simulator";
+      } else {
+        window.location.hash = "";
+        try {
+          window.history.pushState({}, "", window.location.pathname.replace(/#.*$/, ""));
+        } catch {
+          // ignore
+        }
       }
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
     setRoute(to);
   };
@@ -1225,3 +1230,4 @@ export default function AppRoot() {
 
   return <App onNavigateToSimulator={() => navigate("/simulator")} />;
 }
+
