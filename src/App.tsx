@@ -13,8 +13,9 @@ import {
   ExternalLink,
   X,
 } from "lucide-react";
+import { SimulatorDashboard } from "./components/simulator/SimulatorDashboard";
 
-// Standalone embedded simulator application
+// Standalone embedded simulator fallback
 const STREAMLIT_URL = "./simulator.html";
 
 // --- DATA ---
@@ -441,7 +442,7 @@ function BlueprintVehicleAnimation({
   );
 }
 
-function App() {
+function App({ onNavigateToSimulator }: { onNavigateToSimulator?: () => void }) {
   const [activeChapter, setActiveChapter] = useState(0);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -624,8 +625,8 @@ function App() {
                 Solver
               </a>
               <button
-                onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
-                className="text-emerald-700 font-bold hover:text-emerald-900 flex items-center gap-1"
+                onClick={() => onNavigateToSimulator ? onNavigateToSimulator() : (window.location.href = '/simulator')}
+                className="text-emerald-700 font-bold hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
               >
                 Simulator <ExternalLink size={11} />
               </button>
@@ -664,10 +665,17 @@ function App() {
                 <div><a href="#optimization" onClick={() => setIsMobileMenuOpen(false)}>Optimization Logic</a></div>
                 <div>
                   <button
-                    onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
-                    className="text-emerald-700 font-bold"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      if (onNavigateToSimulator) {
+                        onNavigateToSimulator();
+                      } else {
+                        window.location.href = '/simulator';
+                      }
+                    }}
+                    className="text-emerald-700 font-bold cursor-pointer"
                   >
-                    Launch Ballistics Lab ↗
+                    Launch Simulator ↗
                   </button>
                 </div>
               </motion.div>
@@ -711,8 +719,8 @@ function App() {
             {/* Interactive CTA Button: Slide Hover Effect */}
             <motion.div variants={fadeUp}>
               <button
-                onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
-                className="group relative inline-flex items-center gap-3 bg-[#111] text-white px-7 py-3.5 rounded-md border border-[#111] overflow-hidden shadow-sm transition-all duration-300 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.25)] hover:-translate-y-0.5"
+                onClick={() => onNavigateToSimulator ? onNavigateToSimulator() : (window.location.href = '/simulator')}
+                className="group relative inline-flex items-center gap-3 bg-[#111] text-white px-7 py-3.5 rounded-md border border-[#111] overflow-hidden shadow-sm transition-all duration-300 hover:shadow-[4px_4px_0px_rgba(0,0,0,0.25)] hover:-translate-y-0.5 cursor-pointer"
               >
                 {/* Sliding Background Panel */}
                 <div className="absolute inset-0 bg-[#fcfcfc] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]" />
@@ -1016,8 +1024,8 @@ function App() {
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
             <button
-              onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
-              className="px-6 py-3.5 bg-white text-black font-mono text-xs uppercase tracking-widest font-bold rounded hover:bg-gray-200 transition-colors text-center"
+              onClick={() => onNavigateToSimulator ? onNavigateToSimulator() : (window.location.href = '/simulator')}
+              className="px-6 py-3.5 bg-white text-black font-mono text-xs uppercase tracking-widest font-bold rounded hover:bg-gray-200 transition-colors text-center cursor-pointer"
             >
               Open Full Simulator Dashboard ↗
             </button>
@@ -1171,5 +1179,51 @@ function App() {
 }
 
 export default function AppRoot() {
-  return <App />;
+  const [route, setRoute] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname;
+      const hash = window.location.hash;
+      if (path.includes("/simulator") || hash.includes("simulator")) {
+        return "/simulator";
+      }
+    }
+    return "/";
+  });
+
+  useEffect(() => {
+    const handleLocationChange = () => {
+      const path = window.location.pathname;
+      const hash = window.location.hash;
+      if (path.includes("/simulator") || hash.includes("simulator")) {
+        setRoute("/simulator");
+      } else {
+        setRoute("/");
+      }
+    };
+
+    window.addEventListener("popstate", handleLocationChange);
+    window.addEventListener("hashchange", handleLocationChange);
+    return () => {
+      window.removeEventListener("popstate", handleLocationChange);
+      window.removeEventListener("hashchange", handleLocationChange);
+    };
+  }, []);
+
+  const navigate = (to: string) => {
+    if (typeof window !== "undefined") {
+      try {
+        window.history.pushState({}, "", to);
+      } catch {
+        window.location.hash = to === "/simulator" ? "#simulator" : "";
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+    setRoute(to);
+  };
+
+  if (route === "/simulator") {
+    return <SimulatorDashboard onBackToLanding={() => navigate("/")} />;
+  }
+
+  return <App onNavigateToSimulator={() => navigate("/simulator")} />;
 }
