@@ -15,8 +15,6 @@ import {
 } from "lucide-react";
 import { SimulatorDashboard } from "./components/simulator/SimulatorDashboard";
 
-// Standalone embedded simulator fallback
-const STREAMLIT_URL = "./simulator.html";
 
 // --- DATA ---
 const chaptersData = [
@@ -995,10 +993,10 @@ function App({ onNavigateToSimulator }: { onNavigateToSimulator?: () => void }) 
                 DEFENSE SIMULATION ENGINE • COIN-OR CBC SOLVER
               </div>
               <button
-                onClick={() => window.open(STREAMLIT_URL, "_blank") || (window.location.href = STREAMLIT_URL)}
-                className="inline-flex items-center gap-2 text-xs font-mono text-white bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded transition-colors uppercase tracking-widest font-semibold"
+                onClick={() => onNavigateToSimulator ? onNavigateToSimulator() : (window.location.href = '/simulator')}
+                className="inline-flex items-center gap-2 text-xs font-mono text-white bg-emerald-700 hover:bg-emerald-600 px-4 py-2 rounded transition-colors uppercase tracking-widest font-semibold cursor-pointer"
               >
-                Run Live Benchmark <ExternalLink size={12} />
+                Run Live Benchmark <ArrowRight size={12} />
               </button>
             </div>
           </div>
