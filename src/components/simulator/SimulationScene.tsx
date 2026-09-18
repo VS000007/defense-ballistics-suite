@@ -16,7 +16,7 @@ interface SimulationSceneProps {
 // Procedural Topographic Elevation Function
 export function getTerrainHeight(x: number, y: number): number {
   let h = 0;
-  // Northern High-Altitude Mountain Ridges (Himalayan-style high peaks, Y > 10)
+  // Northern High-Altitude Mountain Ridges (Himalayan-style high peaks, Y > 8)
   if (y > 8) {
     const northFactor = (y - 8) / 42;
     const ridge1 = Math.sin(x * 0.14) * Math.cos(y * 0.12) * 2.5;
@@ -47,22 +47,45 @@ export function getTerrainHeight(x: number, y: number): number {
 }
 
 const TopographicTerrain: React.FC = () => {
-  // Generate 3D displaced mountain mesh and wireframe
+  // Generate 3D displaced mountain mesh with vivid height-based vertex colors
   const { geometry, wireGeometry } = useMemo(() => {
     const width = 100;
     const height = 100;
-    const segments = 64; // High fidelity 64x64 grid mesh
+    const segments = 64; // High-fidelity 64x64 terrain grid mesh
 
     const geom = new THREE.PlaneGeometry(width, height, segments, segments);
     geom.rotateX(-Math.PI / 2);
 
     const pos = geom.attributes.position;
+    const colors = new Float32Array(pos.count * 3);
+
+    const colorPeak = new THREE.Color('#00f2fe'); // Glowing Cyan Peak Cap
+    const colorSlope = new THREE.Color('#0284c7'); // Sky Blue Ridge
+    const colorMid = new THREE.Color('#0f2b5c'); // Deep Slate Blue
+    const colorBase = new THREE.Color('#091326'); // Midnight Navy Base
+
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
-      const z = pos.getZ(i); // In 3D plane, Z corresponds to 2D Y
+      const z = pos.getZ(i); // In rotated 3D plane, Z corresponds to 2D Y
       const h = getTerrainHeight(x, z);
       pos.setY(i, h);
+
+      // Height-based elevation color blending
+      const tempColor = new THREE.Color();
+      if (h > 3.2) {
+        tempColor.lerpColors(colorSlope, colorPeak, (h - 3.2) / 3.0);
+      } else if (h > 1.5) {
+        tempColor.lerpColors(colorMid, colorSlope, (h - 1.5) / 1.7);
+      } else {
+        tempColor.lerpColors(colorBase, colorMid, h / 1.5);
+      }
+
+      colors[i * 3] = tempColor.r;
+      colors[i * 3 + 1] = tempColor.g;
+      colors[i * 3 + 2] = tempColor.b;
     }
+
+    geom.setAttribute('color', new THREE.BufferAttribute(colors, 3));
     geom.computeVertexNormals();
 
     const wireGeom = new THREE.WireframeGeometry(geom);
@@ -72,26 +95,26 @@ const TopographicTerrain: React.FC = () => {
 
   return (
     <group>
-      {/* 1. Shaded Low-Poly Mountain Terrain */}
+      {/* 1. Shaded Low-Poly Mountain Terrain with Height Colors */}
       <mesh geometry={geometry} receiveShadow>
         <meshStandardMaterial
-          color="#061226"
-          roughness={0.8}
-          metalness={0.25}
+          vertexColors
+          roughness={0.7}
+          metalness={0.3}
           flatShading
         />
       </mesh>
 
-      {/* 2. Tactical Wireframe Contour Lines */}
+      {/* 2. Vivid Neon Cyan Tactical Contour Wireframe Lines */}
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <primitive
         object={
           new THREE.LineSegments(
             wireGeometry,
             new THREE.LineBasicMaterial({
-              color: new THREE.Color('#0369a1'),
+              color: new THREE.Color('#00f2fe'),
               transparent: true,
-              opacity: 0.28,
+              opacity: 0.42,
             })
           )
         }
@@ -100,63 +123,63 @@ const TopographicTerrain: React.FC = () => {
       {/* 3. Base Ground Boundary Perimeter */}
       <lineSegments position={[0, 0.05, 0]}>
         <edgesGeometry args={[new THREE.BoxGeometry(100, 0.1, 100)]} />
-        <lineBasicMaterial color="#0284c7" transparent opacity={0.6} linewidth={2} />
+        <lineBasicMaterial color="#38bdf8" transparent opacity={0.7} linewidth={2} />
       </lineSegments>
 
-      {/* 4. Strategic 3D Cardinal Sector Badges */}
-      {/* NORTH SECTOR (High-Altitude Mountain Ridge Corridor) */}
-      <group position={[0, 7.5, 50]}>
-        <Html center distanceFactor={85}>
-          <div className="pointer-events-none select-none px-2.5 py-1 rounded bg-slate-950/90 border border-cyan-500/70 text-[10px] font-mono font-bold text-cyan-300 shadow-xl flex items-center gap-1.5 whitespace-nowrap backdrop-blur-md">
-            <Mountain className="w-3 h-3 text-cyan-400" />
-            <span>NORTH • High-Altitude Mountain Ridge Corridor</span>
+      {/* 4. Strategic 3D Cardinal Sector Badges along Outer Boundaries */}
+      {/* NORTH SECTOR (Northern Himalayan Ridge Corridor) */}
+      <group position={[0, 7.5, 53]}>
+        <Html center distanceFactor={90}>
+          <div className="pointer-events-none select-none px-3 py-1 rounded-md bg-slate-950/90 border border-cyan-400 text-[11px] font-mono font-bold text-cyan-300 shadow-2xl flex items-center gap-1.5 whitespace-nowrap backdrop-blur-md">
+            <Mountain className="w-3.5 h-3.5 text-cyan-400" />
+            <span>NORTH • Northern Himalayan Ridge Corridor (Ladakh Sector)</span>
           </div>
         </Html>
       </group>
 
-      {/* WEST SECTOR (Western Plains & Low-Altitude Corridor) */}
-      <group position={[-50, 2.5, 0]}>
-        <Html center distanceFactor={85}>
-          <div className="pointer-events-none select-none px-2.5 py-1 rounded bg-slate-950/90 border border-amber-500/70 text-[10px] font-mono font-bold text-amber-300 shadow-xl flex items-center gap-1.5 whitespace-nowrap backdrop-blur-md">
-            <Navigation className="w-3 h-3 text-amber-400 rotate-[270deg]" />
-            <span>WEST • Western Plains Corridor</span>
+      {/* WEST SECTOR (Western Desert & Plains Corridor) */}
+      <group position={[-53, 3.5, 0]}>
+        <Html center distanceFactor={90}>
+          <div className="pointer-events-none select-none px-3 py-1 rounded-md bg-slate-950/90 border border-amber-400 text-[11px] font-mono font-bold text-amber-300 shadow-2xl flex items-center gap-1.5 whitespace-nowrap backdrop-blur-md">
+            <Navigation className="w-3.5 h-3.5 text-amber-400 rotate-[270deg]" />
+            <span>WEST • Western Desert Corridor (Rajasthan Sector)</span>
           </div>
         </Html>
       </group>
 
-      {/* EAST SECTOR (Eastern Himalayan Foothill Axis) */}
-      <group position={[50, 4.5, 0]}>
-        <Html center distanceFactor={85}>
-          <div className="pointer-events-none select-none px-2.5 py-1 rounded bg-slate-950/90 border border-teal-500/70 text-[10px] font-mono font-bold text-teal-300 shadow-xl flex items-center gap-1.5 whitespace-nowrap backdrop-blur-md">
-            <Navigation className="w-3 h-3 text-teal-400 rotate-90" />
-            <span>EAST • Eastern Foothill Axis</span>
+      {/* EAST SECTOR (Eastern Sub-Himalayan Axis) */}
+      <group position={[53, 5.5, 0]}>
+        <Html center distanceFactor={90}>
+          <div className="pointer-events-none select-none px-3 py-1 rounded-md bg-slate-950/90 border border-emerald-400 text-[11px] font-mono font-bold text-emerald-300 shadow-2xl flex items-center gap-1.5 whitespace-nowrap backdrop-blur-md">
+            <Navigation className="w-3.5 h-3.5 text-emerald-400 rotate-90" />
+            <span>EAST • Eastern Foothill Axis (Arunachal Sector)</span>
           </div>
         </Html>
       </group>
 
-      {/* SOUTH SECTOR (Southern Plain & Maritime Axis) */}
-      <group position={[0, 1.5, -50]}>
-        <Html center distanceFactor={85}>
-          <div className="pointer-events-none select-none px-2.5 py-1 rounded bg-slate-950/90 border border-blue-500/70 text-[10px] font-mono font-bold text-blue-300 shadow-xl flex items-center gap-1.5 whitespace-nowrap backdrop-blur-md">
-            <Navigation className="w-3 h-3 text-blue-400 rotate-180" />
-            <span>SOUTH • Southern Tactical Corridor</span>
+      {/* SOUTH SECTOR (Southern Tactical Corridor) */}
+      <group position={[0, 1.5, -53]}>
+        <Html center distanceFactor={90}>
+          <div className="pointer-events-none select-none px-3 py-1 rounded-md bg-slate-950/90 border border-indigo-400 text-[11px] font-mono font-bold text-indigo-300 shadow-2xl flex items-center gap-1.5 whitespace-nowrap backdrop-blur-md">
+            <Navigation className="w-3.5 h-3.5 text-indigo-400 rotate-180" />
+            <span>SOUTH • Southern Maritime Corridor (Indian Ocean Axis)</span>
           </div>
         </Html>
       </group>
 
-      {/* 5. 3D Compass Rose in Bottom Corner */}
-      <group position={[-42, 0.4, -42]}>
+      {/* 5. 3D Compass Rose in Corner */}
+      <group position={[-43, 0.4, -43]}>
         <mesh rotation={[-Math.PI / 2, 0, 0]}>
           <ringGeometry args={[2.5, 3.2, 32]} />
-          <meshBasicMaterial color="#0284c7" transparent opacity={0.6} />
+          <meshBasicMaterial color="#00f2fe" transparent opacity={0.7} />
         </mesh>
         {/* North Arrow Pointer */}
         <mesh position={[0, 0.1, 2.5]} rotation={[-Math.PI / 2, 0, 0]}>
-          <coneGeometry args={[0.9, 2.2, 16]} />
+          <coneGeometry args={[1.0, 2.4, 16]} />
           <meshBasicMaterial color="#38bdf8" />
         </mesh>
-        <Html position={[0, 0.6, 4.2]} center distanceFactor={60}>
-          <div className="pointer-events-none select-none text-[11px] font-mono font-bold text-cyan-400 bg-slate-950/80 px-1 rounded border border-cyan-700/60">
+        <Html position={[0, 0.6, 4.4]} center distanceFactor={60}>
+          <div className="pointer-events-none select-none text-[11px] font-mono font-bold text-cyan-300 bg-slate-950/90 px-1.5 py-0.5 rounded border border-cyan-500/70">
             N
           </div>
         </Html>
@@ -189,13 +212,13 @@ export const SimulationScene: React.FC<SimulationSceneProps> = ({
   };
 
   return (
-    <div className="relative w-full h-[520px] lg:h-[620px] bg-[#02050e] rounded-xl overflow-hidden border border-cyan-900/50 shadow-2xl shadow-cyan-950/30 flex flex-col">
+    <div className="relative w-full h-[520px] lg:h-[620px] bg-[#02050e] rounded-xl overflow-hidden border border-cyan-700/60 shadow-2xl shadow-cyan-950/40 flex flex-col">
       {/* Top Scene Overlay Bar */}
       <div className="absolute top-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-        <div className="flex items-center gap-2 pointer-events-auto bg-slate-950/85 backdrop-blur-md px-3 py-1.5 rounded-lg border border-slate-700/70 shadow-lg text-xs font-mono text-slate-300">
+        <div className="flex items-center gap-2 pointer-events-auto bg-slate-950/90 backdrop-blur-md px-3.5 py-1.5 rounded-lg border border-cyan-500/50 shadow-lg text-xs font-mono text-slate-300">
           <Compass className="w-4 h-4 text-cyan-400" />
-          <span className="font-semibold text-white">Topographic Theater:</span>
-          <span className="text-cyan-300 font-mono">100 × 100 km High-Altitude Mountain & Corridor Grid</span>
+          <span className="font-semibold text-white">Topographic Defense Theater:</span>
+          <span className="text-cyan-300 font-mono font-bold">100 × 100 km High-Altitude Terrain & Strategic Sectors</span>
         </div>
 
         <div className="flex items-center gap-2 pointer-events-auto">
@@ -220,29 +243,29 @@ export const SimulationScene: React.FC<SimulationSceneProps> = ({
           <color attach="background" args={['#02050e']} />
           <fog attach="fog" args={['#02050e', 100, 240]} />
 
-          {/* Scene Lights */}
-          <ambientLight intensity={0.9} />
+          {/* Vivid Lights */}
+          <ambientLight intensity={1.1} />
           <directionalLight
             position={[50, 90, 45]}
-            intensity={1.5}
+            intensity={1.8}
             castShadow
             shadow-mapSize={[1024, 1024]}
           />
-          <directionalLight position={[-40, 50, -40]} intensity={0.6} color="#38bdf8" />
-          <pointLight position={[0, 40, 0]} intensity={1.2} color="#38bdf8" distance={120} />
+          <directionalLight position={[-40, 50, -40]} intensity={0.8} color="#38bdf8" />
+          <pointLight position={[0, 40, 0]} intensity={1.5} color="#00f2fe" distance={120} />
 
           {/* Interactive Camera Controls */}
           <OrbitControls
             ref={controlsRef}
             makeDefault
-            maxPolarAngle={Math.PI / 2.05} // Prevent going below ground
+            maxPolarAngle={Math.PI / 2.05}
             minDistance={20}
             maxDistance={200}
             enableDamping
             dampingFactor={0.06}
           />
 
-          {/* 3D Procedural Mountain Terrain with Sector Orientations */}
+          {/* 3D Height-Displaced Mountain Terrain with Strategic Sector Orientations */}
           <TopographicTerrain />
 
           {/* 10 Candidate Deployment Sites sitting on Terrain Summits */}
@@ -275,14 +298,14 @@ export const SimulationScene: React.FC<SimulationSceneProps> = ({
 
       {/* Hover Info Tooltip (Bottom Left) */}
       {(hoveredSite || hoveredTrajectory) && (
-        <div className="absolute bottom-16 left-3 z-10 pointer-events-none bg-slate-950/95 backdrop-blur-md border border-cyan-500/50 p-3 rounded-lg shadow-2xl max-w-xs text-xs font-mono text-slate-200">
+        <div className="absolute bottom-16 left-3 z-10 pointer-events-none bg-slate-950/95 backdrop-blur-md border border-cyan-400 p-3.5 rounded-lg shadow-2xl max-w-xs text-xs font-mono text-slate-200">
           {hoveredSite && (
             <div>
-              <div className="font-bold text-cyan-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-cyan-400" />
-                {hoveredSite.name} ({hoveredSite.id})
+              <div className="font-bold text-cyan-300 flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400" />
+                {hoveredSite.name}
               </div>
-              <div className="text-[11px] text-slate-400 mt-1">{hoveredSite.description}</div>
+              <div className="text-[11px] text-slate-300 mt-1 leading-relaxed">{hoveredSite.description}</div>
               <div className="grid grid-cols-2 gap-x-2 gap-y-1 mt-2 text-[10px] text-slate-300">
                 <span>Coord: ({hoveredSite.x}, {hoveredSite.y}) km</span>
                 <span>Terrain Elevation: {hoveredSite.elevation} km</span>
@@ -290,21 +313,21 @@ export const SimulationScene: React.FC<SimulationSceneProps> = ({
                 <span>Capacity: {hoveredSite.capacity} units</span>
                 <span>Quality Score: {hoveredSite.qualityScore}</span>
                 <span className={selectedSet.has(hoveredSite.id) ? 'text-emerald-400 font-bold' : 'text-slate-400'}>
-                  Status: {selectedSet.has(hoveredSite.id) ? 'SELECTED' : 'Standby'}
+                  Status: {selectedSet.has(hoveredSite.id) ? 'ACTIVE' : 'Standby'}
                 </span>
               </div>
             </div>
           )}
           {hoveredTrajectory && (
             <div>
-              <div className="font-bold text-amber-400 flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-400" />
+              <div className="font-bold text-amber-300 flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
                 {hoveredTrajectory.name} ({hoveredTrajectory.id})
               </div>
               <div className="grid grid-cols-2 gap-x-2 gap-y-1 mt-2 text-[10px] text-slate-300">
                 <span>Speed: {hoveredTrajectory.speedKmS} km/s</span>
                 <span>Apogee: {hoveredTrajectory.peakZ} km</span>
-                <span>Synthetic Protection: {Math.round((targetResultsMap.get(hoveredTrajectory.id)?.combinedProtection ?? 0) * 100)}%</span>
+                <span>Protection: {Math.round((targetResultsMap.get(hoveredTrajectory.id)?.combinedProtection ?? 0) * 100)}%</span>
                 <span>
                   Status: {targetResultsMap.get(hoveredTrajectory.id)?.isProtected ? 'PROTECTED' : 'AT RISK'}
                 </span>
@@ -315,11 +338,11 @@ export const SimulationScene: React.FC<SimulationSceneProps> = ({
       )}
 
       {/* Scene Legend Overlay (Bottom Bar) */}
-      <div className="absolute bottom-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-3 bg-slate-950/90 backdrop-blur-md px-3.5 py-2 rounded-lg border border-slate-800/90 text-[11px] font-mono shadow-xl">
+      <div className="absolute bottom-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-3 bg-slate-950/95 backdrop-blur-md px-4 py-2 rounded-lg border border-cyan-800/80 text-[11px] font-mono shadow-xl">
         <div className="flex flex-wrap items-center gap-4 text-slate-300">
           <div className="flex items-center gap-1.5">
-            <span className="w-3 h-3 rounded-full bg-emerald-500 border border-emerald-300 shadow-sm shadow-emerald-500/50" />
-            <span className="text-emerald-300 font-medium">Selected Battery (Active)</span>
+            <span className="w-3 h-3 rounded-full bg-emerald-400 border border-emerald-200 shadow-sm shadow-emerald-400/50" />
+            <span className="text-emerald-300 font-bold">Selected Battery (Active)</span>
           </div>
 
           <div className="flex items-center gap-1.5">
@@ -329,16 +352,16 @@ export const SimulationScene: React.FC<SimulationSceneProps> = ({
 
           <div className="flex items-center gap-1.5">
             <span className="w-3.5 h-1 bg-orange-500 rounded" />
-            <span className="text-orange-300">3D Ballistic Trajectory</span>
+            <span className="text-orange-300 font-medium">3D Ballistic Trajectory</span>
           </div>
 
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rotate-45 bg-yellow-300 border border-yellow-100 shadow-sm shadow-yellow-300/50" />
-            <span className="text-yellow-200">Target Marker</span>
+            <span className="text-yellow-200 font-medium">Target Marker</span>
           </div>
         </div>
 
-        <div className="text-[10px] text-slate-400 flex items-center gap-1">
+        <div className="text-[10px] text-slate-300 flex items-center gap-1">
           <Eye className="w-3.5 h-3.5 text-cyan-400" />
           <span>Left-click: Orbit • Right-click: Pan • Scroll: Zoom</span>
         </div>
