@@ -24,7 +24,7 @@ const chaptersData = [
     apogee: "25 – 45 km",
     speed: "0.8 – 1.4 km/s",
     window: "40 – 60 s",
-    image: "/chapter_tier1.jpg",
+    image: "./chapter_tier1.jpg",
     description:
       "Rapid-response surface-to-air interceptors positioned in forward perimeter polygons to counter low-altitude terminal dive threats.",
   },
@@ -34,7 +34,7 @@ const chaptersData = [
     apogee: "45 – 75 km",
     speed: "1.2 – 2.0 km/s",
     window: "60 – 90 s",
-    image: "/chapter_tier2.jpg",
+    image: "./chapter_tier2.jpg",
     description:
       "Central high-altitude radar nodes coordinating midcourse defensive batteries across contiguous 100 km territorial corridors.",
   },
@@ -44,7 +44,7 @@ const chaptersData = [
     apogee: "70 – 110 km",
     speed: "1.8 – 2.8 km/s",
     window: "90 – 120 s",
-    image: "/chapter_tier3.jpg",
+    image: "./chapter_tier3.jpg",
     description:
       "Sub-orbital kinetic kill vehicles engaging targets at edge-of-space apogees with multi-site layered complementary backup.",
   },
@@ -54,7 +54,7 @@ const chaptersData = [
     apogee: "Ground Level",
     speed: "Stationary Sites",
     window: "Continuous",
-    image: "/chapter_gis.jpg",
+    image: "./chapter_gis.jpg",
     description:
       "Mathematical evaluation of 10 candidate land polygon areas evaluating access, communication, and sensor quality scores.",
   },
@@ -64,7 +64,7 @@ const chaptersData = [
     apogee: "Computational",
     speed: "< 250 ms solve",
     window: "Full Scenario",
-    image: "/chapter_milp.jpg",
+    image: "./chapter_milp.jpg",
     description:
       "Linearized diminishing returns optimization matching site capacities to threat trajectories under strict budget bounds.",
   },
@@ -351,7 +351,7 @@ function BlueprintVehicleAnimation({
             {/* The Blueprint Schematic Image */}
             <div className="relative w-[92%] h-[92%] flex items-center justify-center">
               <img
-                src="/launcher_blueprint.png"
+                src="./launcher_blueprint.png"
                 alt="S-400 Triumf Transporter Erector Launcher Blueprint"
                 className={`max-w-full max-h-full object-contain select-none transition-all duration-500 ${
                   isTacticalDark
@@ -819,7 +819,7 @@ function App({ onNavigateToSimulator }: { onNavigateToSimulator?: () => void }) 
             className="absolute -bottom-16 w-full max-w-[950px] rounded-xl overflow-hidden shadow-2xl border border-gray-800 bg-black z-30"
           >
             <img
-              src="/interceptor_hero.jpg"
+              src="./interceptor_hero.jpg"
               alt="Supersonic Interceptor Vehicle"
               className="w-full h-[260px] md:h-[380px] object-cover opacity-90 hover:scale-105 transition-transform duration-700"
             />
