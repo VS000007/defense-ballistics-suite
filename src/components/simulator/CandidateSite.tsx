@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import type { CandidateSiteData } from '../../lib/types';
+import { getTerrainHeight } from './SimulationScene';
 
 interface CandidateSiteProps {
   site: CandidateSiteData;
@@ -20,9 +21,9 @@ export const CandidateSite: React.FC<CandidateSiteProps> = ({
   const pulseRef = useRef<THREE.Mesh>(null);
   const ringRef = useRef<THREE.Mesh>(null);
 
-  // Position in synthetic 3D space (scaling: 1 unit = 1 km)
+  // Position in synthetic 3D space resting directly on mountain/plateau elevation
   const posX = site.x;
-  const posY = site.elevation * 0.8;
+  const posY = getTerrainHeight(site.x, site.y);
   const posZ = site.y; // Map 2D Y to 3D Z for horizontal ground plane
 
   useFrame(({ clock }) => {
@@ -97,8 +98,8 @@ export const CandidateSite: React.FC<CandidateSiteProps> = ({
         />
       </mesh>
 
-      {/* HTML Floating Label */}
-      <Html position={[0, 2.6, 0]} center distanceFactor={45}>
+      {/* Compact Clean Label */}
+      <Html position={[0, 2.8, 0]} center distanceFactor={55}>
         <div
           className={`pointer-events-none select-none px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider whitespace-nowrap shadow-lg transition-all duration-200 backdrop-blur-sm border ${
             isSelected
